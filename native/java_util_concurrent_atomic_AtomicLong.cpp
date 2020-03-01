@@ -2,18 +2,18 @@
 // Created by 14394 on 2020/2/27.
 //
 
+#include "../automan_jvm.h"
 #include "java_util_concurrent_atomic_AtomicLong.h"
 #include <vector>
 #include <algorithm>
 #include <cassert>
-#include "../automan_jvm.h"
 #include "native.h"
 
 static unordered_map<wstring, void*> methods = {
         {L"VMSupportsCS8:()Z",				(void *)&JVM_VMSupportsCS8},
 };
 
-void JVM_VMSupportsCS8(list<Oop *> & _stack){		// static
+void JVM_VMSupportsCS8(list<Oop*> _stack){		// static
     // x86 always returns true.
     _stack.push_back(new IntOop(true));
 }

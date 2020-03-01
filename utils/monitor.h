@@ -38,7 +38,7 @@ public:
         ReleaseMutex(_mutex);
     }
     void force_unlock_when_athrow() {
-        ReleaseSemaphore(_mutex);
+        ReleaseMutex(_mutex);
     }
     ~Monitor() {
         CloseHandle(_mutex);

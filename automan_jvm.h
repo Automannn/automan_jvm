@@ -5,11 +5,12 @@
 #ifndef AUTOMAN_JVM_AUTOMAN_JVM_H
 #define AUTOMAN_JVM_AUTOMAN_JVM_H
 
+#include <winsock2.h>
 #include <string>
 #include <list>
 #include <vector>
 #include <memory>
-#include <winsock2.h>
+#include <windows.h>
 #include "utils/lock.h"
 #include "runtime/bytecodeEngine.h"
 #include "utils/synchronize_wcout.h"

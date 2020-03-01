@@ -2,10 +2,10 @@
 // Created by 14394 on 2020/2/26.
 //
 
+#include "../system_directory.h"
 #include "java_lang_Class.h"
 #include "java_lang_String.h"
 #include "../runtime/kclass.h"
-#include "../system_directory.h"
 #include "../classloader.h"
 #include "native.h"
 #include "../automan_jvm.h"

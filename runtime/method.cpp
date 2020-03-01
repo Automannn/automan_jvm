@@ -2,13 +2,13 @@
 // Created by 14394 on 2020/2/23.
 //
 
+#include "../classloader.h"
 #include "method.h"
 #include "kclass.h"
 #include "../utils/utils.h"
 #include "oop.h"
 #include "bytecodeEngine.h"
 #include "../native/java_lang_Class.h"
-#include "../classloader.h"
 #include "../utils/synchronize_wcout.h"
 
 Lock & MethodPool::method_pool_lock(){
@@ -174,7 +174,7 @@ vector<MirrorOop *> Method::if_didnt_parse_exceptions_then_parse()
             for (int i = 0; i < exceptions->number_of_exceptions; i ++) {
                 auto rt_pool = this->klass->get_rtpool();
                 assert((*rt_pool)[exceptions->exception_index_table[i]-1].first == CONSTANT_Class);
-                auto excp_klass = boost::any_cast<Klass *>((*rt_pool)[exceptions->exception_index_table[i]-1].second);
+                auto excp_klass = (Klass *)((*rt_pool)[exceptions->exception_index_table[i]-1].second);
                 exceptions_tb[excp_klass->get_name()] = excp_klass;
             }
     }

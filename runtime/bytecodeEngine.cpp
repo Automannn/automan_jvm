@@ -2,8 +2,8 @@
 // Created by 14394 on 2020/2/23.
 //
 
-#include "bytecodeEngine.h"
 #include "../automan_jvm.h"
+#include "bytecodeEngine.h"
 #include "method.h"
 #include "constantpool.h"
 #include "../system_directory.h"
@@ -952,7 +952,7 @@ void BytecodeEngine::main_thread_exception(int exitcode)		// dummy is use for By
         for (auto & thread : automan_jvm::threads()) {
             WaitForSingleObject(_all_thread_wait_mutex,INFINITE);
             thread_state state = thread.state;
-            ReleaseSemaphore(_all_thread_wait_mutex);
+            ReleaseMutex(_all_thread_wait_mutex);
 
             if (state == Death) {					// pthread_cancel SIGSEGV bug sloved：
 //				std::wcout << thread.tid << " is ignored because of [DEATH]" << std::endl;
@@ -2062,9 +2062,9 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
                 break;
             }
             case 0x63:{		// dadd
-                assert(op_stack.top()->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)op_stack.top())->get_type() == Type::DOUBLE);
+                assert(op_stack.top()->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)op_stack.top())->get_type() == Type::_DOUBLE);
                 double val2 = ((DoubleOop*)op_stack.top())->value; op_stack.pop();
-                assert(op_stack.top()->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)op_stack.top())->get_type() == Type::DOUBLE);
+                assert(op_stack.top()->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)op_stack.top())->get_type() == Type::_DOUBLE);
                 double val1 = ((DoubleOop*)op_stack.top())->value; op_stack.pop();
 
 #ifdef BYTECODE_DEBUG
@@ -3530,7 +3530,7 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
                             thread.state = Death;
 //							pthread_mutex_unlock(&_all_thread_wait_mutex);
 
-                            ExitThread(nullptr);	// Spec points out only exit this exception-thread is okay.
+                            ExitThread(0);	// Spec points out only exit this exception-thread is okay.
                         } else {									// else, this is the `main thread`. need to recycle resources...
 
                             BytecodeEngine::main_thread_exception();

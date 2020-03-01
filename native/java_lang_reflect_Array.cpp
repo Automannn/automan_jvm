@@ -2,6 +2,7 @@
 // Created by 14394 on 2020/2/26.
 //
 
+#include "../classloader.h"
 #include "java_lang_reflect_Array.h"
 #include <vector>
 #include <algorithm>
@@ -9,7 +10,6 @@
 #include "native.h"
 #include "java_lang_String.h"
 #include "../utils/os.h"
-#include "../classloader.h"
 
 static unordered_map<wstring, void*> methods = {
         {L"newArray:(" CLS "I)" OBJ,							(void *)&JVM_NewArray},

@@ -22,7 +22,7 @@ void JVM_GetConstant(list<Oop*>& _stack);
 void JVM_Resolve(list<Oop*>& _stack);
 void JVM_Expand(list<Oop*>& _stack);
 void JVM_Init(list<Oop*>& _stack);
-void JVM_MH_ObjjcetFieldOffset(list<Oop*>& _stack);
+void JVM_MH_ObjectFieldOffset(list<Oop*>& _stack);
 void JVM_GetMembers(list<Oop*>& _stack);
 
 class vm_thread;

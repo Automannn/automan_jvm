@@ -2,11 +2,11 @@
 // Created by 14394 on 2020/2/26.
 //
 
+#include "../automan_jvm.h"
 #include "java_io_FileOutputStream.h"
 #include <vector>
 #include <algorithm>
 #include <cassert>
-#include "../automan_jvm.h"
 #include "native.h"
 #include <unistd.h>
 #include "../runtime/thread.h"

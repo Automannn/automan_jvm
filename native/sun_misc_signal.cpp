@@ -2,11 +2,11 @@
 // Created by 14394 on 2020/2/27.
 //
 
+#include "../automan_jvm.h"
 #include "sun_misc_signal.h"
 #include <vector>
 #include <algorithm>
 #include <cassert>
-#include "../automan_jvm.h"
 #include "native.h"
 #include "java_lang_String.h"
 #include <signal.h>

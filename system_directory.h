@@ -5,10 +5,11 @@
 #ifndef AUTOMAN_JVM_SYSTEM_DIRECTORY_H
 #define AUTOMAN_JVM_SYSTEM_DIRECTORY_H
 
+#include <winsock2.h>
 #include <unordered_map>
 #include <string>
 #include <memory>
-#include <winsock2.h>
+#include <windows.h>
 #include "utils/lock.h"
 
 using std::wstring;

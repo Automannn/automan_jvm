@@ -14,4 +14,5 @@ file(GLOB RUNTIME_HEADERS "runtime/*.cpp")
 file(GLOB UTILS_SOURCES "utils/*.h")
 file(GLOB UTILS_HEADERS "utils/*.cpp")
 
-add_library(automan_jvm ${SOURCES} ${HEADERS} ${NATIVE_SOURCES} ${NATIVE_HEADERS} ${RUNTIME_SOURCES} ${RUNTIME_HEADERS} ${UTILS_SOURCES} ${UTILS_HEADERS})
+add_executable(automan_jvm ${SOURCES} ${HEADERS} ${NATIVE_SOURCES} ${NATIVE_HEADERS} ${RUNTIME_SOURCES} ${RUNTIME_HEADERS} ${UTILS_SOURCES} ${UTILS_HEADERS})
+target_link_libraries(automan_jvm -lws2_32)

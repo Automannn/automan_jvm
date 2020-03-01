@@ -11,10 +11,10 @@
 using std::list;
 
 enum ThreadPriority{
-    NoPriority = -1;
-    MinPriority = 1;
-    NormPriority = 5;
-    NearMaxPriority= 9;
+    NoPriority = -1,
+    MinPriority = 1,
+    NormPriority = 5,
+    NearMaxPriority= 9,
     MaxPriority = 10,
     CriticalPriority = 11
 };

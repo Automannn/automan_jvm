@@ -2,8 +2,8 @@
 // Created by 14394 on 2020/2/27.
 //
 
-#include "native.h"
 #include "../automan_jvm.h"
+#include "native.h"
 #include "java_lang_Object.h"
 #include "java_lang_Thread.h"
 #include "java_lang_System.h"

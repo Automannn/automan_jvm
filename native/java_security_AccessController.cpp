@@ -2,13 +2,13 @@
 // Created by 14394 on 2020/2/27.
 //
 
+#include "../automan_jvm.h"
+#include "../classloader.h"
 #include "java_security_AccessController.h"
 #include <vector>
 #include <algorithm>
 #include <cassert>
-#include "../automan_jvm.h"
 #include "native.h"
-#include "../classloader.h"
 
 static unordered_map<wstring, void*> methods = {
         {L"doPrivileged:(" PA ")" OBJ,				(void *)&JVM_DoPrivileged},

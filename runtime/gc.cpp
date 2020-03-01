@@ -2,15 +2,16 @@
 // Created by 14394 on 2020/2/23.
 //
 
+#include "../automan_jvm.h"
 #include "gc.h"
 #include "oop.h"
 #include "kclass.h"
 #include "thread.h"
-#include "../automan_jvm.h"
 #include "../classloader.h"
 #include "../native/java_lang_Class.h"
 #include "../native/java_lang_String.h"
 #include "../utils/utils.h"
+
 
 bool GC::init_gc()
 {

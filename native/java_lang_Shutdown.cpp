@@ -2,11 +2,11 @@
 // Created by 14394 on 2020/2/26.
 //
 
+#include "../automan_jvm.h"
 #include "java_lang_Shutdown.h"
 #include <vector>
 #include <algorithm>
 #include <cassert>
-#include "../automan_jvm.h"
 #include "native.h"
 
 static unordered_map<wstring, void*> methods = {
@@ -20,4 +20,6 @@ void JVM_Halt0(list<Oop *> & _stack){		// static
     //todo： 在 windows中，主线程退出，则子线程也会退出，需要注意
     BytecodeEngine::main_thread_exception(exitcode);
 }
+
+void* java_lang_shutdown_search_method(const wstring& signature){}
 

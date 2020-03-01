@@ -19,9 +19,9 @@ class Oop;
 class Klass;
 
 class GC{
-private:
-    static HANDLE gc_cond;
-    static HANDLE gc_cond_mutes;
+public:
+     static HANDLE gc_cond;
+     static HANDLE gc_cond_mutes;
 
     static void recursive_add_oop_and_its_inner_oops_and_modify_pointers_by_the_way(Oop* const& origin_oop, unordered_map<Oop *,Oop*>& new_oop_map);
 

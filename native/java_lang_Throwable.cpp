@@ -2,13 +2,13 @@
 // Created by 14394 on 2020/2/27.
 //
 
+#include "../automan_jvm.h"
 #include "java_lang_Throwable.h"
 #include <vector>
 #include <algorithm>
 #include <cassert>
 #include "native.h"
 #include "java_lang_String.h"
-#include "../automan_jvm.h"
 
 static unordered_map<wstring, void*> methods = {
         {L"fillInStackTrace:(I)" TRB,							(void *)&JVM_FillInStackTrace},

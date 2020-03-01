@@ -5,6 +5,7 @@
 #ifndef AUTOMAN_JVM_CLASSLOADER_H
 #define AUTOMAN_JVM_CLASSLOADER_H
 
+#include "system_directory.h"
 #include <map>
 #include <string>
 #include <fstream>
@@ -13,7 +14,6 @@
 #include <list>
 #include "class_parser.h"
 #include "jarlister.h"
-#include "system_directory.h"
 #include "utils/lock.h"
 
 using std::map;

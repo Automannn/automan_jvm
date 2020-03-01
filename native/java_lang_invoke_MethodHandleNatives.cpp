@@ -2,6 +2,8 @@
 // Created by 14394 on 2020/2/26.
 //
 
+#include "../classloader.h"
+#include "../automan_jvm.h"
 #include "java_lang_invoke_MethodHandleNatives.h"
 #include <vector>
 #include <algorithm>
@@ -9,8 +11,6 @@
 #include "native.h"
 #include "java_lang_String.h"
 #include "../utils/os.h"
-#include "../classloader.h"
-#include "../automan_jvm.h"
 #include <algorithm>
 
 Lock member_name_table_lock;
@@ -42,7 +42,7 @@ static unordered_map<wstring, void*> methods = {
         {L"resolve:(" MN CLS ")" MN,											(void *)&JVM_Resolve},
         {L"expand:(" MN ")V",												(void *)&JVM_Expand},
         {L"init:(" MN OBJ ")V",												(void *)&JVM_Init},
-        {L"objectFieldOffset:(" MN ")J",										(void *)&JVM_MH_ObjjcetFieldOffset},
+        {L"objectFieldOffset:(" MN ")J",										(void *)&JVM_MH_ObjectFieldOffset},
         {L"getMembers:(" CLS STR STR "I" CLS "I" "[" MN ")I",					(void *)&JVM_GetMembers},
 };
 

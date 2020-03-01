@@ -16,6 +16,7 @@
 #include <map>
 #include <climits>
 #include <cstring>
+#include <windows.h>
 #include <winsock2.h>
 #include "utils/synchronize_wcout.h"
 

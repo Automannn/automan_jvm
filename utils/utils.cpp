@@ -21,15 +21,15 @@ wstring utf8_to_wstring(const string& str){
 }
 
 vector<wstring>& split(wstring str,wstring splitter){
-    vector<wstring> ret;
+    vector<wstring>* ret=new vector<wstring>();
     int seprate_len=splitter.length();
     int start=0;
     int index;
     while((index = str.find(splitter,start))!=-1){
-        ret.push_back(str.substr(start,index-start));
+        ret->push_back(str.substr(start,index-start));
         start = index+seprate_len;
     }
     if(start<str.length())
-        ret.push_back(str.substr(start,str.length()-start));
-    return ret;
+        ret->push_back(str.substr(start,str.length()-start));
+    return *ret;
 }

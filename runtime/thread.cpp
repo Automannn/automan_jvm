@@ -2,9 +2,9 @@
 // Created by 14394 on 2020/2/23.
 //
 
+#include "../automan_jvm.h"
 #include "thread.h"
 #include "../utils/synchronize_wcout.h"
-#include "../automan_jvm.h"
 
 Lock & ThreadTable::get_lock()
 {

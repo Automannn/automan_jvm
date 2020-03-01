@@ -8,6 +8,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include <windows.h>
 #include <wininet.h>
 
 #define MAGIC_NUMBER 0xCAFEBABE

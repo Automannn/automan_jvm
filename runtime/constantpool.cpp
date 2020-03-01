@@ -2,9 +2,9 @@
 // Created by 14394 on 2020/2/23.
 //
 
+#include "../classloader.h"
 #include "constantpool.h"
 #include "../native/java_lang_String.h"
-#include "../classloader.h"
 #include "kclass.h"
 #include "field.h"
 #include "bytecodeEngine.h"
@@ -131,40 +131,40 @@ const pair<int, PVOID> & rt_constant_pool::if_didnt_parse_then_parse(int i)
         }
         case CONSTANT_Integer:{
             CONSTANT_Integer_info* target = (CONSTANT_Integer_info*)bufs[i];
-            this->pool[i] = (make_pair(bufs[i]->tag, target->get_value()));		// int
+            this->pool[i] = (make_pair(bufs[i]->tag, new int(target->get_value())));		// int
             break;
         }
         case CONSTANT_Float:{
             CONSTANT_Float_info* target = (CONSTANT_Float_info*)bufs[i];
-            this->pool[i] = (make_pair(bufs[i]->tag, target->get_value()));		// float
+            this->pool[i] = (make_pair(bufs[i]->tag, new float(target->get_value())));		// float
             break;
         }
         case CONSTANT_Long:{
             CONSTANT_Long_info* target = (CONSTANT_Long_info*)bufs[i];
-            this->pool[i] = (make_pair(bufs[i]->tag, target->get_value()));		// long
+            this->pool[i] = (make_pair(bufs[i]->tag, new long(target->get_value())));		// long
             this->pool[i+1] = (make_pair(-1, nullptr));
             break;
         }
         case CONSTANT_Double:{
             CONSTANT_Double_info* target = (CONSTANT_Double_info*)bufs[i];
             double result = target->get_value();
-            this->pool[i] = (make_pair(bufs[i]->tag, target->get_value()));		// double
+            this->pool[i] = (make_pair(bufs[i]->tag, new double(target->get_value())));		// double
             this->pool[i+1] = (make_pair(-1, nullptr));
             break;
         }
         case CONSTANT_NameAndType:{
             CONSTANT_NameAndType_info* target = (CONSTANT_NameAndType_info*)bufs[i];
-            this->pool[i] = (make_pair(bufs[i]->tag, make_pair((int)target->name_index, (int)target->descriptor_index)));	// pair<int, int> 。
+            this->pool[i] = (make_pair(bufs[i]->tag, new pair<int,int>(make_pair((int)target->name_index, (int)target->descriptor_index))));	// pair<int, int> 。
             break;
         }
         case CONSTANT_Utf8:{
             CONSTANT_Utf8_info* target = (CONSTANT_Utf8_info*)bufs[i];
-            this->pool[i] = (make_pair(bufs[i]->tag, target->convert_to_Unicode()));		// wstring。
+            this->pool[i] = (make_pair(bufs[i]->tag, new wstring(target->convert_to_Unicode())));		// wstring。
             break;
         }
         case CONSTANT_MethodHandle:{
             CONSTANT_MethodHandle_info *target = (CONSTANT_MethodHandle_info*)bufs[i];
-            this->pool[i] = (make_pair(bufs[i]->tag, make_pair((int)target->reference_kind, (int)target->reference_index)));	// pair<int, int> 。
+            this->pool[i] = (make_pair(bufs[i]->tag, new pair<int,int>(make_pair((int)target->reference_kind, (int)target->reference_index))));	// pair<int, int> 。
             break;
         }
         case CONSTANT_MethodType:{
@@ -177,7 +177,7 @@ const pair<int, PVOID> & rt_constant_pool::if_didnt_parse_then_parse(int i)
         case CONSTANT_InvokeDynamic:{
             CONSTANT_InvokeDynamic_info *target = (CONSTANT_InvokeDynamic_info*)bufs[i];
             //todo: make_pair 返回的 是 pair,而需要的泛型类型是： pvoid ，编译可能会出错
-            this->pool[i] = (make_pair(bufs[i]->tag, make_pair((int)target->bootstrap_method_attr_index, (int)target->name_and_type_index)));	// pair<int, int> 。
+            this->pool[i] = (make_pair(bufs[i]->tag, new pair<int,int>(make_pair((int)target->bootstrap_method_attr_index, (int)target->name_and_type_index))));	// pair<int, int> 。
             break;
         }
         default:{

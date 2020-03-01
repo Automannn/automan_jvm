@@ -2,11 +2,11 @@
 // Created by 14394 on 2020/2/27.
 //
 
+#include "../automan_jvm.h"
 #include "sun_reflect_NativeMethodAccessorImpl.h"
 #include "java_lang_invoke_MethodHandle.h"
 #include <algorithm>
 #include <cassert>
-#include "../automan_jvm.h"
 #include "native.h"
 
 static unordered_map<wstring, void*> methods = {

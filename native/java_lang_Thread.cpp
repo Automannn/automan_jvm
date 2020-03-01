@@ -2,12 +2,12 @@
 // Created by 14394 on 2020/2/27.
 //
 
+#include "../automan_jvm.h"
 #include "java_lang_Thread.h"
 #include <algorithm>
 #include <cassert>
 #include "native.h"
 #include "../runtime/thread.h"
-#include "../automan_jvm.h"
 #include <process.h>
 #include "../utils/synchronize_wcout.h"
 

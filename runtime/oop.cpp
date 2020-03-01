@@ -2,8 +2,8 @@
 // Created by 14394 on 2020/2/23.
 //
 
-#include "oop.h"
 #include "../classloader.h"
+#include "oop.h"
 #include "../utils/synchronize_wcout.h"
 
 /*===---------------- Memory -------------------===*/

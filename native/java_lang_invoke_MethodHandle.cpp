@@ -2,6 +2,8 @@
 // Created by 14394 on 2020/2/26.
 //
 
+#include "../classloader.h"
+#include "../automan_jvm.h"
 #include "java_lang_invoke_MethodHandle.h"
 #include "java_lang_invoke_MethodHandleNatives.h"
 #include <vector>
@@ -10,8 +12,6 @@
 #include "native.h"
 #include "java_lang_String.h"
 #include "../utils/os.h"
-#include "../classloader.h"
-#include "../automan_jvm.h"
 #include "../utils/utils.h"
 
 static unordered_map<wstring, void*> methods = {
