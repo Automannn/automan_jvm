@@ -12,6 +12,8 @@
 #include "../native/java_lang_String.h"
 #include "../utils/utils.h"
 
+HANDLE GC::gc_cond;
+HANDLE GC::gc_cond_mutes;
 
 bool GC::init_gc()
 {
