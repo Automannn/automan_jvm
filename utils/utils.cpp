@@ -7,17 +7,39 @@
 #include <iostream>
 #include <sstream>
 #include <locale>
+#include <windows.h>
 
 using namespace std;
 
-string  wstring_to_utf8(const wstring& str){
-    wstring_convert<codecvt_utf8< wchar_t>> myconv;
-    return myconv.to_bytes(str);
+string  wstring_to_utf8(const wstring& wstr){
+    LPCWSTR pwszSrc = wstr.c_str();
+    int nLen = WideCharToMultiByte( CP_ACP, 0, pwszSrc, -1, NULL, 0, NULL, NULL );
+    if ( nLen == 0 )
+        return(std::string( "" ) );
+    char* pszDst = new char[nLen];
+    if ( !pszDst )
+        return(std::string( "" ) );
+    WideCharToMultiByte( CP_ACP, 0, pwszSrc, -1, pszDst, nLen, NULL, NULL );
+    std::string str( pszDst );
+    delete[] pszDst;
+    pszDst = NULL;
+    return(str);
 }
 
 wstring utf8_to_wstring(const string& str){
-    wstring_convert<codecvt_utf8< wchar_t>> myconv;
-    return myconv.from_bytes(str);
+    LPCSTR  pszSrc  = str.c_str();
+    int nLen = MultiByteToWideChar( CP_ACP, 0, pszSrc, -1, NULL, 0 );
+    if ( nLen == 0 )
+        return(std::wstring( L"" ) );
+
+    wchar_t* pwszDst = new wchar_t[nLen];
+    if ( !pwszDst )
+        return(std::wstring( L"" ) );
+    MultiByteToWideChar( CP_ACP, 0, pszSrc, -1, pwszDst, nLen );
+    std::wstring wstr( pwszDst );
+    delete[] pwszDst;
+    pwszDst = NULL;
+    return(wstr);
 }
 
 vector<wstring>& split(wstring str,wstring splitter){
