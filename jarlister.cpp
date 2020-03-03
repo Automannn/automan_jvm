@@ -160,14 +160,14 @@ bool JarLister::getjarlist(const wstring & rtjar_pos) const
         return true;
     }
     cmd.str(L"");
-    cmd << L"mkdir " << uncompressed_dir << L" > /dev/null 2>&1";
+    cmd << L"mkdir " << uncompressed_dir;
     status = system(wstring_to_utf8(cmd.str()).c_str());
     if (status == -1) {
         exit(-1);
     }
     cmd.str(L"");
     std::wcout << "unzipping rt.jar from: [" << rtjar_pos << "] ... please wait.\n";
-    cmd << L"unzip " << rtjar_pos << L" -d " << uncompressed_dir << L" > /dev/null 2>&1";
+    cmd << L"unzip " << rtjar_pos << L" -d " << uncompressed_dir;
     status = system(wstring_to_utf8(cmd.str()).c_str());
     if (status == -1) {  	// http://blog.csdn.net/cheyo/article/details/6595955 [shell 命令是否执行成功的判定]
         std::cerr << "system error!" << endl;
@@ -203,7 +203,7 @@ JarLister::JarLister() : rjd(L"root")
     //todo: 这里配置 windows的 rt路径
     rtjar_folder = utf8_to_wstring("C:\\Program Files\\Java\\jdk1.8.0_161\\jre\\lib\\");
 #endif
-    rtjar_pos = rtjar_folder + L"rt.jar";
+    rtjar_pos = L"\""+rtjar_folder + L"rt.jar"+L"\"";
 
     // copy lib/currency.data to ./lib/currency.data ......
     wstringstream ss;
