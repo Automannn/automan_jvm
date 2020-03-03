@@ -37,8 +37,7 @@ void JVM_WriteBytes(list<Oop *> & _stack){
     assert(bytes->get_length() > offset && bytes->get_length() >= (offset + len));		// ArrayIndexOutofBoundException
     if (fd == STDOUT_FILENO) {
         char *buf = new char[5+len+5];
-        HANDLE _tid = OpenThread(THREAD_ALL_ACCESS,FALSE,GetCurrentThreadId());
-        switch (ThreadTable::get_threadno(_tid) % 7) {
+        switch (ThreadTable::get_threadno(GetCurrentThreadId()) % 7) {
             case 0:
                 strncpy(buf, RESET, 5);		// do not copy the final '\0'.
                 break;

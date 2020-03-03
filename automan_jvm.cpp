@@ -24,8 +24,7 @@ unsigned scapegoat (void *pp) {
 
     temp *real = (temp *)pp;
 //	if (real->cur_thread_obj != nullptr) {		// so the ThreadTable::get_thread_obj may be nullptr.		// I add all thread into Table due to gc should stop all threads.
-    HANDLE _tid = OpenThread(THREAD_ALL_ACCESS,false,GetCurrentThreadId());
-    ThreadTable::add_a_thread(_tid, real->cur_thread_obj, real->thread);		// the cur_thread_obj is from `java/lang/Thread.start0()`.
+    ThreadTable::add_a_thread(GetCurrentThreadId(), real->cur_thread_obj, real->thread);		// the cur_thread_obj is from `java/lang/Thread.start0()`.
 //	}
     if (real->should_be_stop_first) {		// if this thread is a child thread created by `start0`: should stop it first because of gc's race.
         // it will be hung up at the `global pthread_cond`. and will be wake up by `signal_all_thread()`.
@@ -90,8 +89,8 @@ void vm_thread::start(list<Oop *> & arg)
         vm_thread::init_and_do_main();		// init global variables and execute `main()` function.
     } else {
         // [x] if this is not the thread[0], detach itself is okay because no one will pthread_join it.
-        //todo: 这里相当于 closeHandle
-        CloseHandle(tid);
+        //todo: 这里分离子线程
+//        CloseHandle(tid);
 //        pthread_detach(pthread_self());
         assert(this->vm_stack.size() == 0);	// check
         assert(arg.size() == 1);				// run() only has one argument `this`.
@@ -216,8 +215,7 @@ void vm_thread::init_and_do_main()
         //todo: 这里的线程优先级还没有绑定到 thread句柄上， 通过 setThreadPriority
         init_thread->set_field_value(THREAD L":priority:I", new IntOop(THREAD_PRIORITY_NORMAL));
         //todo: 这里通过 openthread 根据当前线程的id 获取到线程句柄  注意，当前线程的句柄不能关闭
-        HANDLE _tid = OpenThread(THREAD_ALL_ACCESS, false,GetCurrentThreadId());
-        ThreadTable::add_a_thread(_tid, init_thread, this);
+        ThreadTable::add_a_thread(GetCurrentThreadId(), init_thread, this);
 
         // 2. create a [System] ThreadGroup obj.
         auto threadgroup_klass = ((InstanceKlass *)BootStrapClassLoader::get_bootstrap().loadClass(L"java/lang/ThreadGroup"));

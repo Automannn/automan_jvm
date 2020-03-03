@@ -958,10 +958,10 @@ void BytecodeEngine::main_thread_exception(int exitcode)		// dummy is use for By
 //				std::wcout << thread.tid << " is ignored because of [DEATH]" << std::endl;
                 continue;
             }
-
-           HANDLE _currHandle = OpenThread(THREAD_ALL_ACCESS, false,GetCurrentThreadId());
-            if (thread.tid != _currHandle) {
-                WaitForSingleObject(thread.tid,INFINITE);
+            if (thread.tid != GetCurrentThreadId()) {
+                HANDLE _handle =OpenThread(THREAD_ALL_ACCESS,FALSE,GetCurrentThreadId());
+                WaitForSingleObject(_handle,INFINITE);
+                CloseHandle(_handle);
                 //todo: 当线程执行完后，清理。
                 cleanup(nullptr);
             } else {
@@ -3510,8 +3510,7 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
 #ifdef BYTECODE_DEBUG
                         sync_wcout{} << "(DEBUG) [athrow] TERMINALED because of exception!!!" << std::endl;
 #endif
-                        HANDLE _handle = OpenThread(THREAD_ALL_ACCESS,false,GetCurrentThreadId());
-                        InstanceOop *thread_obj = ThreadTable::get_a_thread(_handle);
+                        InstanceOop *thread_obj = ThreadTable::get_a_thread(GetCurrentThreadId());
                         assert(thread_obj != nullptr);
                         auto final_method = ((InstanceKlass *)thread_obj->get_klass())->get_class_method(L"dispatchUncaughtException:(Ljava/lang/Throwable;)V", false);
                         assert(final_method != nullptr);

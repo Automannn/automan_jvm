@@ -2,6 +2,7 @@
 // Created by 14394 on 2020/2/23.
 //
 
+#include <winsock2.h>
 #include "class_parser.h"
 #include <iostream>
 #include <cstdio>
@@ -17,7 +18,6 @@
 #include <climits>
 #include <cstring>
 #include <windows.h>
-#include <winsock2.h>
 #include "utils/synchronize_wcout.h"
 
 using namespace std;
