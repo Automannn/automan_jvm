@@ -49,12 +49,12 @@ void vm_thread::launch(InstanceOop *cur_thread_obj)
     //todo: 实际上这个线程是用于初始化的
    HANDLE cur_handle = (HANDLE)(_beginthreadex(NULL, 0, scapegoat, &p, 0, NULL));
 
-    this->tid = cur_handle;		// save to the vm_thread.
+    this->tid = GetThreadId(cur_handle);		// save to the vm_thread.
 
     if (!inited) {		// if this is the main thread which create the first init --> thread[0], then wait.
 
         //todo: 阻塞执行 tid线程，tid执行完后才往后执行
-        WaitForSingleObject(tid,INFINITE);
+        WaitForSingleObject(cur_handle,INFINITE);
         GC::signal_all_patch();
         int remain_thread_num;
         while(true) {

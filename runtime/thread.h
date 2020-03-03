@@ -28,18 +28,18 @@ class ThreadTable{
 private:
    static Lock& get_lock();
 public:
-    static unordered_map<HANDLE,tuple<int,InstanceOop*,vm_thread*>>& get_thread_table();
+    static unordered_map<DWORD,tuple<int,InstanceOop*,vm_thread*>>& get_thread_table();
 
 public:
     //TODO: 这里的 tid 设置为 HANDLE 还是  DWORD呢？
-    static void add_a_thread(HANDLE tid,InstanceOop* _thread,vm_thread* t);
-    static void remove_a_thread(HANDLE tid);
-    static int get_threadno(HANDLE tid);
-    static bool is_in(HANDLE tid);
-    static InstanceOop* get_a_thread(HANDLE tid);
-    static bool detect_thread_death(HANDLE tid);
+    static void add_a_thread(DWORD tid,InstanceOop* _thread,vm_thread* t);
+    static void remove_a_thread(DWORD tid);
+    static int get_threadno(DWORD tid);
+    static bool is_in(DWORD tid);
+    static InstanceOop* get_a_thread(DWORD tid);
+    static bool detect_thread_death(DWORD tid);
     static void print_table();
-    static void kill_all_except_main_thread(HANDLE main_tid);
+    static void kill_all_except_main_thread(DWORD main_tid);
     static int size(){return get_thread_table().size();}
 
 public:

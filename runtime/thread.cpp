@@ -12,13 +12,13 @@ Lock & ThreadTable::get_lock()
     return lock;
 }
 
-unordered_map<HANDLE, tuple<int, InstanceOop *, vm_thread *>> & ThreadTable::get_thread_table()
+unordered_map<DWORD, tuple<int, InstanceOop *, vm_thread *>> & ThreadTable::get_thread_table()
 {
-    static unordered_map<HANDLE, tuple<int, InstanceOop *, vm_thread *>> thread_table;
+    static unordered_map<DWORD, tuple<int, InstanceOop *, vm_thread *>> thread_table;
     return thread_table;
 }
 
-void ThreadTable::add_a_thread(HANDLE tid, InstanceOop *_thread, vm_thread *t)
+void ThreadTable::add_a_thread(DWORD tid, InstanceOop *_thread, vm_thread *t)
 {
     LockGuard lg(get_lock());
 
@@ -32,13 +32,13 @@ void ThreadTable::add_a_thread(HANDLE tid, InstanceOop *_thread, vm_thread *t)
     get_thread_table()[tid] = std::make_tuple(number, _thread, t);		// Override!!!! because tid maybe the same...?
 }
 
-void ThreadTable::remove_a_thread(HANDLE tid)
+void ThreadTable::remove_a_thread(DWORD tid)
 {
     LockGuard lg(get_lock());
     get_thread_table().erase(tid);
 }
 
-int ThreadTable::get_threadno(HANDLE tid)
+int ThreadTable::get_threadno(DWORD tid)
 {
     LockGuard lg(get_lock());
     auto iter = get_thread_table().find(tid);
@@ -48,7 +48,7 @@ int ThreadTable::get_threadno(HANDLE tid)
     return -1;
 }
 
-bool ThreadTable::is_in(HANDLE tid)
+bool ThreadTable::is_in(DWORD tid)
 {
     LockGuard lg(get_lock());
     auto iter = get_thread_table().find(tid);
@@ -58,7 +58,7 @@ bool ThreadTable::is_in(HANDLE tid)
     return false;
 }
 
-InstanceOop * ThreadTable::get_a_thread(HANDLE tid) {
+InstanceOop * ThreadTable::get_a_thread(DWORD tid) {
     LockGuard lg(get_lock());
     auto iter = get_thread_table().find(tid);
     if (iter != get_thread_table().end()) {
@@ -67,11 +67,11 @@ InstanceOop * ThreadTable::get_a_thread(HANDLE tid) {
     return nullptr;
 }
 
-bool ThreadTable::detect_thread_death(HANDLE tid)
+bool ThreadTable::detect_thread_death(DWORD tid)
 {
     LockGuard lg(get_lock());
-   bool ret= TerminateThread(tid,0);
-    if (ret) {
+    HANDLE _handle =OpenThread(THREAD_ALL_ACCESS,FALSE,tid);
+    if (_handle!= nullptr) {
         return false;
     }else {
         std::wcerr << "wrong!" << std::endl;		// maybe the EINVAL...
@@ -93,15 +93,15 @@ void ThreadTable::print_table()
 //#endif
 }
 
-void ThreadTable::kill_all_except_main_thread(HANDLE main_tid)
+void ThreadTable::kill_all_except_main_thread(DWORD main_tid)
 {
     for (auto iter : get_thread_table()) {
         if (iter.first == main_tid)	continue;
         else {
-            if (!TerminateThread(iter.first,0)) {
+            //这里相当于触发gc
+          DWORD ret = raise(SIGINT);
+            if (ret!=0) {
                 assert(false);
-            } else{
-                raise(SIGINT);
             }
         }
     }
