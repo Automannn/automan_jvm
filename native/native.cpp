@@ -33,6 +33,8 @@
 #include "java_lang_invoke_MethodHandle.h"
 #include "sun_reflect_NativeMethodAccessorImpl.h"
 #include "java_lang_Shutdown.h"
+#include "java_io_WinNTFileSystem.h"
+#include "sun_io_Win32ErrorMode.h"
 
 static unordered_map<wstring, function<void*(const wstring &)>> native_map;		// such as: {L"java/lang/Object", search [native method]'s method lambda for java/lang/Object}
 
@@ -67,6 +69,9 @@ void init_native()		// the same as "registerNatives" method.
     native_map[L"java/lang/invoke/MethodHandle"] = java_lang_invoke_methodHandle_search_method;
     native_map[L"sun/reflect/NativeMethodAccessorImpl"] = sun_reflect_nativeMethodAccessorImpl_search_method;
     native_map[L"java/lang/Shutdown"] = java_lang_shutdown_search_method;
+    native_map[L"java/lang/Shutdown"] = java_lang_shutdown_search_method;
+    native_map[L"java/io/WinNTFileSystem"] = java_io_WinNTFileSystem_search_method;
+    native_map[L"sun/io/Win32ErrorMode"] = sun_io_Win32ErrorMode_search_method;
 }
 
 // find a native method <$signature> in a klass <$klass_name>, return the method in (void *). if didn't find, abort().

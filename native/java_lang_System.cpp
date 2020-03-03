@@ -203,6 +203,8 @@ void JVM_InitProperties(list<Oop *> & _stack){		// static
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"sun.io.unicode.encoding"), java_lang_string::intern(L"UnicodeBig")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.home"), java_lang_string::intern(pwd)});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.class.path"), java_lang_string::intern(pwd + L":" + sun_src)});		 // TODO: need modified.
+    //todo: 新增属性
+    thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"user.dir"), java_lang_string::intern(pwd)});
     _stack.push_back(prop);
 }
 
