@@ -12,6 +12,8 @@ using std::list;
 
 void JVM_GetLength(list<Oop*>& _stack);
 
+void JVM_GetBooleanAttributes(list<Oop *> & _stack);
+
 void* java_io_fileSystem_search_method(const wstring& signature);
 
 

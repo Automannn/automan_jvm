@@ -259,7 +259,7 @@ void JVM_GetObjectVolatile(list<Oop *> & _stack){			// volatile + memory barrier
 }
 
 void JVM_CompareAndSwapObject(list<Oop *> & _stack){
-    //todo: 废弃该方法
+    //todo: 该方法返回一个boolean，{0,1}  concurrentHashMap会用到
     InstanceOop *_this = (InstanceOop *)_stack.front();	_stack.pop_front();
     InstanceOop *obj = (InstanceOop *)_stack.front();	_stack.pop_front();
     long offset = ((LongOop *)_stack.front())->value;	_stack.pop_front();
@@ -267,14 +267,14 @@ void JVM_CompareAndSwapObject(list<Oop *> & _stack){
     InstanceOop *x = (InstanceOop *)_stack.front();	_stack.pop_front();
     void *addr = get_inner_obj_from_obj_and_offset(obj, offset);
     // CAS, from x86 assembly, and openjdk.
-//    _stack.push_back(new IntOop(cmpxchg((long)x, (volatile long *)addr, (long)expected) == (long)expected));
+    int ret = cmpxchg(x, (volatile long *)addr, expected) == expected;
+    _stack.push_back(new IntOop(ret));
 #ifdef DEBUG
     sync_wcout{} << "(DEBUG) compare obj + offset with [" << expected << "] and swap to be [" << x << "], success: [" << std::boolalpha << (bool)((IntOop *)_stack.back())->value << "]." << std::endl;
 #endif
 }
 
 void JVM_CompareAndSwapLong(list<Oop *> & _stack){
-    //todo:这里由于cpu架构的原因，需要修改，否则会编译不通过，这里的cas操作暂时废弃
     InstanceOop *_this = (InstanceOop *)_stack.front();	_stack.pop_front();
     InstanceOop *obj = (InstanceOop *)_stack.front();	_stack.pop_front();
     long offset = ((LongOop *)_stack.front())->value;	_stack.pop_front();
@@ -285,7 +285,7 @@ void JVM_CompareAndSwapLong(list<Oop *> & _stack){
 
     assert((*target)->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)*target)->get_type() == Type::_LONG);
     // CAS, from x86 assembly, and openjdk.
-//    _stack.push_back(new IntOop(cmpxchg(x, &((LongOop *)*target)->value, expected) == expected));
+    _stack.push_back(new IntOop(cmpxchg(x, &((LongOop *)*target)->value, expected) == expected));
 #ifdef DEBUG
     sync_wcout{} << "(DEBUG) compare obj + offset with [" << expected << "] and swap to be [" << x << "], success: [" << std::boolalpha << (bool)((IntOop *)_stack.back())->value << "]." << std::endl;
 #endif

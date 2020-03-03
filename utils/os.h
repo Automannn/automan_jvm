@@ -22,8 +22,16 @@ inline int cmpxchg(int exchange_value, volatile long *dest,int compare_value){
 
 inline long cmpxchg(long exchange_value, volatile long *dest, long compare_value)
 {
-    InterlockedCompareExchange(dest,exchange_value,compare_value);
-    return exchange_value;
+    LONG ret =InterlockedCompareExchange(dest,exchange_value,compare_value);
+    return ret;
+}
+
+inline PVOID cmpxchg(PVOID exchange_value, volatile long *dest, PVOID compare_value)
+{
+    //此时 dest中的内容存的应该为 一个指针
+    //返回值的逻辑尚未进行验证，但是初始化的时候是可以通过的。
+    LONG ret =InterlockedCompareExchange(dest,(long long)exchange_value,(long long)compare_value);
+    return (PVOID)ret;
 }
 
 inline void fence()

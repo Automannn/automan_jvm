@@ -575,6 +575,9 @@ void BytecodeEngine::invokeVirtual(Method *new_method, stack<Oop *> & op_stack, 
                 }
                 std::wcout << "method!" << std::endl;
             }
+            if(native_method== nullptr){
+                int i=0;
+            }
             assert(native_method != nullptr);
 #ifdef BYTECODE_DEBUG
             sync_wcout{} << "(DEBUG) invoke a [native] method: <class>: " << new_klass->get_name() << "-->" << new_method->get_name() << ":(this)"<< new_method->get_descriptor() << std::endl;
@@ -2853,6 +2856,10 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
             case 0x9d:		// ifgt
             case 0x9e:{		// ifle
                 short branch_pc = ((pc[1] << 8) | pc[2]);
+                bool bb = op_stack.top()->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)op_stack.top())->get_type() == Type::_INT;
+                if(!bb){
+                    int i =0;
+                }
                 assert(op_stack.top()->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)op_stack.top())->get_type() == Type::_INT);
                 int int_value = ((IntOop*)op_stack.top())->value;	op_stack.pop();
                 bool judge;
@@ -3053,6 +3060,10 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
             case 0xac:{		// ireturn
                 thread.pc = backup_pc;
                 sync_wcout::set_switch(backup_switch);
+                bool bb= op_stack.top()->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)op_stack.top())->get_type() == Type::_INT;
+                if(!bb){
+                    int i=0;
+                }
                 assert(op_stack.top()->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)op_stack.top())->get_type() == Type::_INT);
 #ifdef BYTECODE_DEBUG
                 sync_wcout{} << "(DEBUG) return an int value from stack: "<< ((IntOop*)op_stack.top())->value << std::endl;
