@@ -69,6 +69,7 @@ InstanceOop * ThreadTable::get_a_thread(DWORD tid) {
 
 bool ThreadTable::detect_thread_death(DWORD tid)
 {
+    LockGuard lg(get_lock());
     //todo: pthread_kill 当参数为0时，是监测线程是否存活,在执行native的时候，由于检查的是本线程，因此肯定是存活的
     //可能这里要考虑其它地方的调用，因此通过 waitfor的方式，立即返回，超时则说明线程正在运行
     HANDLE ret= OpenThread(THREAD_ALL_ACCESS,FALSE,GetCurrentThreadId());
@@ -88,7 +89,7 @@ void ThreadTable::print_table()
     for (auto iter : get_thread_table()) {
         std::wcout << "pthread_t :[" << iter.first << "], is the [" << std::get<0>(iter.second) <<
                    "] thread, Thread Oop address: [" << std::dec << std::get<1>(iter.second) << "]"
-                                                                                                      ", state:[" << std::get<2>(iter.second)->state << "]" << (!std::get<2>(iter.second)->p.should_be_stop_first ? "(main)" : "")<< std::endl;
+                                                                                                ", state:[" << std::get<2>(iter.second)->state << "]" << (!std::get<2>(iter.second)->p.should_be_stop_first ? "(main)" : "")<< std::endl;
     }
     std::wcout << "===------------------------------------------===" << std::endl;
 //#endif

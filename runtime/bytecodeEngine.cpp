@@ -512,6 +512,9 @@ void BytecodeEngine::invokeVirtual(Method *new_method, stack<Oop *> & op_stack, 
         thread.get_stack_trace();			// delete, for debug
         std::wcout << new_method->get_klass()->get_name() << " " << signature << std::endl;
     }
+    if(ref==nullptr){
+        int i=0;
+    }
     assert(ref != nullptr);			// `this` must not be nullptr!!!!
 #ifdef BYTECODE_DEBUG
     sync_wcout{} << "(DEBUG)";

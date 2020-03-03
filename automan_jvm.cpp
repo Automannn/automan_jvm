@@ -242,7 +242,7 @@ void vm_thread::init_and_do_main()
         // 3. load System class
         auto system_klass = ((InstanceKlass *)BootStrapClassLoader::get_bootstrap().loadClass(L"java/lang/System"));
         system_klass->set_state(Klass::KlassState::Initializing);
-//		BytecodeEngine::initial_clinit(system_klass, *this);
+		BytecodeEngine::initial_client(system_klass, *this);
         auto InputStream_klass = ((InstanceKlass *)BootStrapClassLoader::get_bootstrap().loadClass(L"java/io/InputStream"));
         BytecodeEngine::initial_client(InputStream_klass, *this);
         auto PrintStream_klass = ((InstanceKlass *)BootStrapClassLoader::get_bootstrap().loadClass(L"java/io/PrintStream"));
