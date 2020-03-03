@@ -24,8 +24,8 @@ unsigned scapegoat (void *pp) {
 
     temp *real = (temp *)pp;
 //	if (real->cur_thread_obj != nullptr) {		// so the ThreadTable::get_thread_obj may be nullptr.		// I add all thread into Table due to gc should stop all threads.
-    HANDLE _tid = OpenThread(THREAD_ALL_ACCESS,false,GetCurrentThreadId());
-    ThreadTable::add_a_thread(_tid, real->cur_thread_obj, real->thread);		// the cur_thread_obj is from `java/lang/Thread.start0()`.
+    //todo: 由于每次的 OpenThread打开的句柄，并不一致，因此修改所有的tid 为 id号
+    ThreadTable::add_a_thread(GetCurrentThreadId(), real->cur_thread_obj, real->thread);		// the cur_thread_obj is from `java/lang/Thread.start0()`.
 //	}
     if (real->should_be_stop_first) {		// if this thread is a child thread created by `start0`: should stop it first because of gc's race.
         // it will be hung up at the `global pthread_cond`. and will be wake up by `signal_all_thread()`.
@@ -49,12 +49,10 @@ void vm_thread::launch(InstanceOop *cur_thread_obj)
     //todo: 实际上这个线程是用于初始化的
    HANDLE cur_handle = (HANDLE)(_beginthreadex(NULL, 0, scapegoat, &p, 0, NULL));
 
-    this->tid = cur_handle;		// save to the vm_thread.
-
+    this->tid = GetThreadId(cur_handle);		// save to the vm_thread.
     if (!inited) {		// if this is the main thread which create the first init --> thread[0], then wait.
-
         //todo: 阻塞执行 tid线程，tid执行完后才往后执行
-        WaitForSingleObject(tid,INFINITE);
+        WaitForSingleObject(cur_handle,INFINITE);
         GC::signal_all_patch();
         int remain_thread_num;
         while(true) {
@@ -90,8 +88,7 @@ void vm_thread::start(list<Oop *> & arg)
         vm_thread::init_and_do_main();		// init global variables and execute `main()` function.
     } else {
         // [x] if this is not the thread[0], detach itself is okay because no one will pthread_join it.
-        //todo: 这里相当于 closeHandle
-        CloseHandle(tid);
+        //todo: 这里需要子线程分离，暂未找到合适的 api函数，因此先不做
 //        pthread_detach(pthread_self());
         assert(this->vm_stack.size() == 0);	// check
         assert(arg.size() == 1);				// run() only has one argument `this`.
@@ -214,10 +211,9 @@ void vm_thread::init_and_do_main()
         //todo: 注意这里的 threadid 的来源，可能要修改
         init_thread->set_field_value(THREAD L":eetop:J", new LongOop((uint64_t)GetCurrentThreadId()));
         //todo: 这里的线程优先级还没有绑定到 thread句柄上， 通过 setThreadPriority
-        init_thread->set_field_value(THREAD L":priority:I", new IntOop(THREAD_PRIORITY_NORMAL));
-        //todo: 这里通过 openthread 根据当前线程的id 获取到线程句柄  注意，当前线程的句柄不能关闭
-        HANDLE _tid = OpenThread(THREAD_ALL_ACCESS, false,GetCurrentThreadId());
-        ThreadTable::add_a_thread(_tid, init_thread, this);
+        //todo： 这里 ThreaPriority的属性值，暂时手写 norm为5，枚举在 native/thread里面
+        init_thread->set_field_value(THREAD L":priority:I", new IntOop(5));
+        ThreadTable::add_a_thread(GetCurrentThreadId(), init_thread, this);
 
         // 2. create a [System] ThreadGroup obj.
         auto threadgroup_klass = ((InstanceKlass *)BootStrapClassLoader::get_bootstrap().loadClass(L"java/lang/ThreadGroup"));

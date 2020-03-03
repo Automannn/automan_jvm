@@ -26,7 +26,8 @@ using std::make_shared;
 #if (defined (__APPLE__) || defined (__linux__))
 wstring splitter(L"/");
 #else
-wstring splitter(L"\\");
+//todo: 注意，这个路径从 rt.jar解压出来后，实际上 分隔符 还是 /
+wstring splitter(L"/");
 #endif
 
 string getProgramDir(){
@@ -85,7 +86,7 @@ shared_ptr<RtJarDirectory> RtJarDirectory::findFolderInThis(const wstring & fdr_
     else return nullptr;
 }
 
-void RtJarDirectory::add_file(StringSplitter && ss)
+void RtJarDirectory::add_file(StringSplitter&& ss)
 {
     if (ss.counter() == 0) {		// 仅仅在第一次的时候做检查，看文件到底存不存在
         if (this->find_file(std::move(ss)) == true) return;
@@ -150,6 +151,7 @@ const unordered_set<wstring> exclude_files{ L"META-INF/" };
 bool JarLister::getjarlist(const wstring & rtjar_pos) const
 {
     wstringstream cmd;
+    //todo: windows路径中包含空格，需要用单引号引起来  即 将 rt.jar的内容 保存在rt.list中
     cmd << L"jar tf " << rtjar_pos << L" > " << this->rtlist;
     int status =  system(wstring_to_utf8(cmd.str()).c_str());
     if (status == -1) {
@@ -157,23 +159,25 @@ bool JarLister::getjarlist(const wstring & rtjar_pos) const
     }
     // TODO: judge whether mkdir is exist?
     if (0==access(wstring_to_utf8(uncompressed_dir).c_str(),F_OK)) {	// 如果存在
+        //todo:这里再调试时，发现存在逻辑问题，暂时注释掉. 这一步骤时解压rt.jar的，正常情况下，解压成功后，是可以跳过这个步骤的
+        //另外，这个步骤也比较费时间，所以这个检查很有必要
         return true;
     }
     cmd.str(L"");
-    cmd << L"mkdir " << uncompressed_dir << L" > /dev/null 2>&1";
+    cmd << L"mkdir " << uncompressed_dir;
     status = system(wstring_to_utf8(cmd.str()).c_str());
     if (status == -1) {
         exit(-1);
     }
     cmd.str(L"");
     std::wcout << "unzipping rt.jar from: [" << rtjar_pos << "] ... please wait.\n";
-    cmd << L"unzip " << rtjar_pos << L" -d " << uncompressed_dir << L" > /dev/null 2>&1";
+    //todo: 因为 windows环境 不支持 控制台字符串的重定向，因此删除重定向命令
+    cmd << L"unzip " << rtjar_pos << L" -d " << uncompressed_dir;
     status = system(wstring_to_utf8(cmd.str()).c_str());
     if (status == -1) {  	// http://blog.csdn.net/cheyo/article/details/6595955 [shell 命令是否执行成功的判定]
         std::cerr << "system error!" << endl;
         exit(-1);
     } else {
-        if (status) {
             if (0 ==status) {
                 std::wcout << "unzipping succeed.\n";
                 return true;
@@ -181,9 +185,6 @@ bool JarLister::getjarlist(const wstring & rtjar_pos) const
             else {
                 std::cerr << "Your rt.jar file is not right!" << endl;
             }
-        } else {
-            std::cerr << "other fault reasons!" << endl;
-        }
     }
     return false;
 }
@@ -203,7 +204,8 @@ JarLister::JarLister() : rjd(L"root")
     //todo: 这里配置 windows的 rt路径
     rtjar_folder = utf8_to_wstring("C:\\Program Files\\Java\\jdk1.8.0_161\\jre\\lib\\");
 #endif
-    rtjar_pos = rtjar_folder + L"rt.jar";
+    //todo: 这里很重要，需要在外部加上单引号
+    rtjar_pos =L"\""+ rtjar_folder + L"rt.jar"+L"\"";
 
     // copy lib/currency.data to ./lib/currency.data ......
     wstringstream ss;

@@ -17,6 +17,7 @@ static unordered_map<wstring, void*> methods = {
         {L"handle0:(IJ)J",						(void *)&JVM_Handle0},
 };
 
+
 #ifdef __APPLE__
 static std::unordered_map<wstring, int> siglabels {				// from jvm_bsd.cpp
   /* derived from /usr/include/bits/signum.h on RH7.2 */
@@ -94,6 +95,14 @@ static std::unordered_map<wstring, int> siglabels {
   {L"SYS",        SIGSYS},         /* Bad system call. Only on some Linuxen! */
 #endif
 };
+#else
+static std::unordered_map<wstring, int> siglabels {
+        {L"INT",        SIGINT},         /* Interrupt (ANSI).  */
+        {L"ILL",        SIGILL},         /* Illegal instruction (ANSI).  */
+        {L"ABRT",       SIGABRT},        /* Abort (ANSI).  */
+        {L"FPE",        SIGFPE},         /* Floating-point exception (ANSI).  */
+        {L"TERM",       SIGTERM},        /* Termination (ANSI).  */
+};
 #endif
 
 
@@ -105,40 +114,38 @@ void default_user_handler_for_all_sigs(int signo)
 }
 
 void JVM_FindSignal(list<Oop *> & _stack){		// static
-    assert(false);
-    //todo:已经禁用
     InstanceOop *str = (InstanceOop *)_stack.front();	_stack.pop_front();
-//    auto iter = siglabels.find(java_lang_string::stringOop_to_wstring(str));
-//    assert(iter != siglabels.end());
-//    _stack.push_back(new IntOop(iter->second));
+    auto iter = siglabels.find(java_lang_string::stringOop_to_wstring(str));
+    //todo: 这里应该是允许找不到的，找不到就返回-1
+    assert(iter != siglabels.end());
+    _stack.push_back(new IntOop(iter->second));
 #ifdef DEBUG
     sync_wcout{} << "(DEBUG) find [" << java_lang_string::stringOop_to_wstring(str) << "] and get sig number: [" << iter->second << "]." << std::endl;
 #endif
 }
 
 void JVM_Handle0(list<Oop *> & _stack){		// static
-    //todo: 禁用
-    assert(false);
     int signo = ((IntOop *)_stack.front())->value;	_stack.pop_front();
     long fake_handler_no = ((LongOop *)_stack.front())->value;	_stack.pop_front();	// must be 0, 1, 2 because of Signal.handle() 's filter.
 
     void *fake_new_handler = (fake_handler_no == 2) ? (void *)default_user_handler_for_all_sigs : (void *)fake_handler_no;
-//    switch(signo) {	// from jvm_bsd.cpp
+    switch(signo) {	// from jvm_bsd.cpp
 //        case SIGUSR1:
-//        case SIGFPE:
+        case SIGFPE:
 //        case SIGKILL:
-//        case SIGSEGV:
+        case SIGSEGV:
 //        case SIGQUIT:{
 //            _stack.push_back(new LongOop(-1));		// wrong. can't modify these signals!
 //            return;
 //        }
-//
-//        case SIGINT:{
-//            _stack.push_back(new LongOop(2));		// use my signal handler
-//            return;
-//        }
-//
+
+        case SIGINT:{
+            _stack.push_back(new LongOop(2));		// use my signal handler
+            return;
+        }
+
 //        case SIGHUP:
+//由于这里是windows，为了简便，暂不给信号处理程序
 //        case SIGTERM:{
 //            // detect whether the sig is `ignored`. if not, set the handler. if yes, return 1.
 //            struct sigaction oact;
@@ -155,9 +162,9 @@ void JVM_Handle0(list<Oop *> & _stack){		// static
 //                // go next.
 //            }
 //        }
-//    }
-//
-//    // register the handler now.
+    }
+
+    // register the handler now.
 //    struct sigaction act, oact;
 //    sigfillset(&act.sa_mask);
 //    act.sa_flags = SA_RESTART;
@@ -182,6 +189,7 @@ void JVM_Handle0(list<Oop *> & _stack){		// static
 //    } else {
 //        _stack.push_back(new LongOop(-1));	// error.
 //    }
+    _stack.push_back(new LongOop(-1));	// error.
 
 #ifdef DEBUG
     sync_wcout{} << "(DEBUG) set signo: [" << signo << "]'s handler to a new handler: [(void (*)(int)" << std::hex << ((LongOop *)_stack.back())->value << "]." << std::endl;

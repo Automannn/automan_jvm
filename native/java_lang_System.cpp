@@ -169,7 +169,7 @@ void JVM_InitProperties(list<Oop *> & _stack){		// static
     assert(hashtable_put != nullptr);
 
     // get pwd/sun_src
-    wstring sun_src = pwd + L"/sun_src";
+    wstring sun_src = pwd + L"\\sun_src";
 
     //todo: vm的 properties
     // add properties: 	// this, key, value
@@ -187,6 +187,9 @@ void JVM_InitProperties(list<Oop *> & _stack){		// static
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.vendor.url"), java_lang_string::intern(L"http://wind2412.github.io/")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"path.separator"), java_lang_string::intern(L":")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"file.encoding.pkg"), java_lang_string::intern(L"sun.io")});
+    //todo: 这里需要新增一个 user.dir
+    thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"user.dir"), java_lang_string::intern(pwd)});
+
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"user.country"), java_lang_string::intern(L"CN")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"user.language"), java_lang_string::intern(L"zh")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"sun.java.launcher"), java_lang_string::intern(L"WIND_STANDARD")});
@@ -217,7 +220,6 @@ void JVM_SetIn0(list<Oop *> & _stack){		// static
     assert(system != nullptr);
     ((InstanceKlass *)system)->set_static_field_value(L"in:Ljava/io/InputStream;", inputstream);
 }
-
 void JVM_SetOut0(list<Oop *> & _stack){		// static
     InstanceOop *printstream = (InstanceOop *)_stack.front();	_stack.pop_front();
     auto system = BootStrapClassLoader::get_bootstrap().loadClass(L"java/lang/System");

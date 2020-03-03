@@ -5,28 +5,21 @@
 #ifndef AUTOMAN_JVM_OS_H
 #define AUTOMAN_JVM_OS_H
 
+#include <windows.h>
 #include <c++/cstdint>
+#include <winnt.h>
 
 int get_cpu_nums();
 
 //CAS，from x86 assembly, and this code is from openjdk;
 inline int cmpxchg(int exchange_value, volatile int *dest,int compare_value){
-    int mp = get_cpu_nums()>1?get_cpu_nums():0;
-    __asm__ volatile("cmp $0, %4; je 1f; lock; 1: cmpxchgl %1,(%3)"
-    : "=a"(exchange_value)
-    : "r"(exchange_value), "a"(compare_value), "r"(dest), "r"(mp)
-    : "cc", "memory");
-
+    InterlockedCompareExchange(reinterpret_cast<volatile long *>(dest), exchange_value, compare_value);
     return exchange_value;
 }
 
 inline long cmpxchg(long exchange_value, volatile long *dest, long compare_value)
 {
-    int mp = get_cpu_nums() > 1 ? get_cpu_nums() : 0;
-    __asm__ volatile("cmp $0, %4; je 1f; lock; 1: cmpxchgq %1,(%3)"
-    : "=a"(exchange_value)
-    : "r"(exchange_value), "a"(compare_value), "r"(dest), "r"(mp)
-    : "cc", "memory");
+    InterlockedCompareExchange(dest,exchange_value,compare_value);
     return exchange_value;
 }
 

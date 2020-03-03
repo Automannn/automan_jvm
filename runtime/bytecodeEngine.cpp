@@ -383,6 +383,7 @@ bool BytecodeEngine::check_instanceof(Klass *ref_klass, Klass *klass)
     return result;
 }
 
+//todo:这个方法是用于 实例化顶级父类的
 void BytecodeEngine::initial_client(InstanceKlass *new_klass, vm_thread & thread)
 {
     if (new_klass->get_state() == Klass::KlassState::NotInitialized) {
@@ -512,6 +513,9 @@ void BytecodeEngine::invokeVirtual(Method *new_method, stack<Oop *> & op_stack, 
         thread.get_stack_trace();			// delete, for debug
         std::wcout << new_method->get_klass()->get_name() << " " << signature << std::endl;
     }
+    if(ref==nullptr){
+        std::cout<<"ttt"<<std::endl;
+    }
     assert(ref != nullptr);			// `this` must not be nullptr!!!!
 #ifdef BYTECODE_DEBUG
     sync_wcout{} << "(DEBUG)";
@@ -568,6 +572,9 @@ void BytecodeEngine::invokeVirtual(Method *new_method, stack<Oop *> & op_stack, 
                     std::wcout << "[static] ";
                 }
                 std::wcout << "method!" << std::endl;
+            }
+            if(native_method== nullptr){
+                int i=0;
             }
             assert(native_method != nullptr);
 #ifdef BYTECODE_DEBUG
@@ -710,7 +717,8 @@ sync_wcout{} << "(DEBUG) invoke a [native] method: <class>: " << new_klass->get_
 else if (*pc == 0xb8)
 sync_wcout{} << "(DEBUG) invoke a [native] method: <class>: " << new_klass->get_name() << "-->" << new_method->get_name() << ":"<< new_method->get_descriptor() << std::endl;
 #endif
-            void *native_method = find_native(new_klass->get_name(), signature);
+            wstring ss = new_klass->get_name();
+            void *native_method = find_native(ss, signature);
             // no need to add a stack frame!
             if (native_method == nullptr) {
                 std::wcout << "You didn't write the [" << new_klass->get_name() << ":" << signature << "] native ";
@@ -718,6 +726,9 @@ sync_wcout{} << "(DEBUG) invoke a [native] method: <class>: " << new_klass->get_
                     std::wcout << "[static] ";
                 }
                 std::wcout << "method!" << std::endl;
+            }
+            if (native_method== nullptr){
+                std::cout<<"tttt"<<std::endl;
             }
             assert(native_method != nullptr);
             if (*pc == 0xb7)
@@ -959,9 +970,10 @@ void BytecodeEngine::main_thread_exception(int exitcode)		// dummy is use for By
                 continue;
             }
 
-           HANDLE _currHandle = OpenThread(THREAD_ALL_ACCESS, false,GetCurrentThreadId());
-            if (thread.tid != _currHandle) {
-                WaitForSingleObject(thread.tid,INFINITE);
+
+            if (thread.tid != GetCurrentThreadId()) {
+                HANDLE _currHandle = OpenThread(THREAD_ALL_ACCESS, false,thread.tid);
+                WaitForSingleObject(_currHandle,INFINITE);
                 //todo: 当线程执行完后，清理。
                 cleanup(nullptr);
             } else {
@@ -996,6 +1008,7 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
 
     static bool inited = false;
     init_lock.lock();
+    //todo:当线程池中数量大于3个 触发gc
     if (!inited && ThreadTable::size() >= 3) {	// delete
         inited = GC::init_gc();
     }
@@ -3044,6 +3057,12 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
             case 0xac:{		// ireturn
                 thread.pc = backup_pc;
                 sync_wcout::set_switch(backup_switch);
+                Oop aaa=*((Oop*) op_stack.top());
+                BasicTypeOop aab = *((BasicTypeOop *)op_stack.top());
+                bool bb = op_stack.top()->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)op_stack.top())->get_type() == Type::_INT;
+                if(!bb){
+                    int i=0;
+                }
                 assert(op_stack.top()->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)op_stack.top())->get_type() == Type::_INT);
 #ifdef BYTECODE_DEBUG
                 sync_wcout{} << "(DEBUG) return an int value from stack: "<< ((IntOop*)op_stack.top())->value << std::endl;
@@ -3186,8 +3205,23 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
                 assert(rt_pool[rtpool_index-1].first == CONSTANT_Methodref);
                 auto new_method = (Method *)(rt_pool[rtpool_index-1].second);
 
+                //todo: 这里用于调试
+                //发现 newPrintStream导致程序假死，属于system的方法
+                if(new_method->get_name()==L"setIn0"){
+                    int i=0;
+                }
+                if(new_method->get_name()==L"setOut0"){
+                    int i=0;
+                }
+                if(new_method->get_name()==L"setErr0"){
+                    int i=0;
+                }
+                if(new_method->get_name()==L"loadLibrary"){
+                    int i=0;
+                }
                 invokeStatic(new_method, op_stack, thread, cur_frame, pc);
 
+                //OutputStream实例化
                 // **IMPORTANT** judge whether returns an Exception!!!
                 if (cur_frame.has_exception/* && !new_method->is_void()*/) {
                     Oop *top = op_stack.top();
@@ -3510,8 +3544,7 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
 #ifdef BYTECODE_DEBUG
                         sync_wcout{} << "(DEBUG) [athrow] TERMINALED because of exception!!!" << std::endl;
 #endif
-                        HANDLE _handle = OpenThread(THREAD_ALL_ACCESS,false,GetCurrentThreadId());
-                        InstanceOop *thread_obj = ThreadTable::get_a_thread(_handle);
+                        InstanceOop *thread_obj = ThreadTable::get_a_thread(GetCurrentThreadId());
                         assert(thread_obj != nullptr);
                         auto final_method = ((InstanceKlass *)thread_obj->get_klass())->get_class_method(L"dispatchUncaughtException:(Ljava/lang/Throwable;)V", false);
                         assert(final_method != nullptr);
@@ -3726,7 +3759,7 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
 
 
             default:
-                std::cerr << "doesn't support bytecode " << bccode_map[*pc].first << " now..." << std::endl;
+                std::cout << "doesn't support bytecode " << bccode_map[*pc].first << " now..." << std::endl;
                 assert(false);
         }
         pc += occupied;
