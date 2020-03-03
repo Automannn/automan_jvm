@@ -12,9 +12,12 @@
 int get_cpu_nums();
 
 //CAS，from x86 assembly, and this code is from openjdk;
-inline int cmpxchg(int exchange_value, volatile int *dest,int compare_value){
-    InterlockedCompareExchange(reinterpret_cast<volatile long *>(dest), exchange_value, compare_value);
-    return exchange_value;
+//x,target,expected  -->期望的是 交换。
+inline int cmpxchg(int exchange_value, volatile long *dest,int compare_value){
+    //dest 是 被比较的值，是一个指针。 如果 compare与 dest值相等，则dest的值用 exchange换掉， compare是用于比较的值
+    //返回原来dest指向的值
+    LONG ret= InterlockedCompareExchange(dest, exchange_value, compare_value);
+    return ret;
 }
 
 inline long cmpxchg(long exchange_value, volatile long *dest, long compare_value)

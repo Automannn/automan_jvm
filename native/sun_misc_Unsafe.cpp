@@ -159,7 +159,9 @@ void JVM_CompareAndSwapInt(list<Oop *> & _stack){
     Oop **target = get_inner_oop_from_instance_oop_of_static_or_non_static_fields(obj, offset);
     assert((*target)->get_ooptype() == OopType::_BasicTypeOop && ((BasicTypeOop *)*target)->get_type() == Type::_INT);
     // CAS, from x86 assembly, and openjdk.
-    _stack.push_back(new IntOop(cmpxchg(x, &((IntOop *)*target)->value, expected) == expected));
+    //todo 正确的结果应该返回 true,否则可能造成无限循环，重要！！！
+    int ret = cmpxchg(x, &((LongOop *)*target)->value, expected) == expected;
+    _stack.push_back(new IntOop(ret));
 #ifdef DEBUG
     sync_wcout{} << "(DEBUG) compare obj + offset with [" << expected << "] and swap to be [" << x << "], success: [" << std::boolalpha << (bool)((IntOop *)_stack.back())->value << "]." << std::endl;
 #endif
