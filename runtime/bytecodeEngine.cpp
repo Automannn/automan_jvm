@@ -3510,8 +3510,7 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
 #ifdef BYTECODE_DEBUG
                         sync_wcout{} << "(DEBUG) [athrow] TERMINALED because of exception!!!" << std::endl;
 #endif
-                        HANDLE _handle = OpenThread(THREAD_ALL_ACCESS,false,GetCurrentThreadId());
-                        InstanceOop *thread_obj = ThreadTable::get_a_thread(_handle);
+                        InstanceOop *thread_obj = ThreadTable::get_a_thread(GetCurrentThreadId());
                         assert(thread_obj != nullptr);
                         auto final_method = ((InstanceKlass *)thread_obj->get_klass())->get_class_method(L"dispatchUncaughtException:(Ljava/lang/Throwable;)V", false);
                         assert(final_method != nullptr);

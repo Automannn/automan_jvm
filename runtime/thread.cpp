@@ -12,13 +12,13 @@ Lock & ThreadTable::get_lock()
     return lock;
 }
 
-unordered_map<HANDLE, tuple<int, InstanceOop *, vm_thread *>> & ThreadTable::get_thread_table()
+unordered_map<DWORD, tuple<int, InstanceOop *, vm_thread *>> & ThreadTable::get_thread_table()
 {
-    static unordered_map<HANDLE, tuple<int, InstanceOop *, vm_thread *>> thread_table;
+    static unordered_map<DWORD, tuple<int, InstanceOop *, vm_thread *>> thread_table;
     return thread_table;
 }
 
-void ThreadTable::add_a_thread(HANDLE tid, InstanceOop *_thread, vm_thread *t)
+void ThreadTable::add_a_thread(DWORD tid, InstanceOop *_thread, vm_thread *t)
 {
     LockGuard lg(get_lock());
 
@@ -32,13 +32,13 @@ void ThreadTable::add_a_thread(HANDLE tid, InstanceOop *_thread, vm_thread *t)
     get_thread_table()[tid] = std::make_tuple(number, _thread, t);		// Override!!!! because tid maybe the same...?
 }
 
-void ThreadTable::remove_a_thread(HANDLE tid)
+void ThreadTable::remove_a_thread(DWORD tid)
 {
     LockGuard lg(get_lock());
     get_thread_table().erase(tid);
 }
 
-int ThreadTable::get_threadno(HANDLE tid)
+int ThreadTable::get_threadno(DWORD tid)
 {
     LockGuard lg(get_lock());
     auto iter = get_thread_table().find(tid);
@@ -48,7 +48,7 @@ int ThreadTable::get_threadno(HANDLE tid)
     return -1;
 }
 
-bool ThreadTable::is_in(HANDLE tid)
+bool ThreadTable::is_in(DWORD tid)
 {
     LockGuard lg(get_lock());
     auto iter = get_thread_table().find(tid);
@@ -58,7 +58,7 @@ bool ThreadTable::is_in(HANDLE tid)
     return false;
 }
 
-InstanceOop * ThreadTable::get_a_thread(HANDLE tid) {
+InstanceOop * ThreadTable::get_a_thread(DWORD tid) {
     LockGuard lg(get_lock());
     auto iter = get_thread_table().find(tid);
     if (iter != get_thread_table().end()) {
@@ -67,11 +67,12 @@ InstanceOop * ThreadTable::get_a_thread(HANDLE tid) {
     return nullptr;
 }
 
-bool ThreadTable::detect_thread_death(HANDLE tid)
+bool ThreadTable::detect_thread_death(DWORD tid)
 {
-    LockGuard lg(get_lock());
-   bool ret= TerminateThread(tid,0);
-    if (ret) {
+    //todo: pthread_kill 当参数为0时，是监测线程是否存活,在执行native的时候，由于检查的是本线程，因此肯定是存活的
+    //可能这里要考虑其它地方的调用，因此通过 waitfor的方式，立即返回，超时则说明线程正在运行
+    HANDLE ret= OpenThread(THREAD_ALL_ACCESS,FALSE,GetCurrentThreadId());
+    if (ret!= nullptr) {
         return false;
     }else {
         std::wcerr << "wrong!" << std::endl;		// maybe the EINVAL...
@@ -93,15 +94,14 @@ void ThreadTable::print_table()
 //#endif
 }
 
-void ThreadTable::kill_all_except_main_thread(HANDLE main_tid)
+void ThreadTable::kill_all_except_main_thread(DWORD main_tid)
 {
     for (auto iter : get_thread_table()) {
         if (iter.first == main_tid)	continue;
         else {
-            if (!TerminateThread(iter.first,0)) {
+            //todo:这里相当于触发gc，是本地线程负责执行的，这里没有针对线程发送信号
+            if (!raise(SIGINT)) {
                 assert(false);
-            } else{
-                raise(SIGINT);
             }
         }
     }

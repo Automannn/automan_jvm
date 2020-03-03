@@ -147,9 +147,8 @@ void JVM_Sleep(list<Oop *> & _stack){			// static
 
 void JVM_CurrentThread(list<Oop *> & _stack){		// static
     InstanceOop *thread_oop;
-    HANDLE _tid = OpenThread(THREAD_ALL_ACCESS,FALSE,GetCurrentThreadId());
-    assert(ThreadTable::detect_thread_death(_tid) == false);
-    thread_oop = ThreadTable::get_a_thread(_tid);
+    assert(ThreadTable::detect_thread_death(GetCurrentThreadId()) == false);
+    thread_oop = ThreadTable::get_a_thread(GetCurrentThreadId());
     assert(thread_oop != nullptr);
     _stack.push_back(thread_oop);
 }
