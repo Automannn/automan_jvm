@@ -478,9 +478,7 @@ void BytecodeEngine::putStatic(Field_info *new_field, stack<Oop *> & op_stack, v
 
 void BytecodeEngine::invokeVirtual(Method *new_method, stack<Oop *> & op_stack, vm_thread & thread, StackFrame & cur_frame, uint8_t * & pc)
 {
-    if(new_method->get_name()==L"getAndAdd"){
-        std::cout<<"getandadd"<<std::endl;
-    }
+
     wstring signature = new_method->get_name() + L":" + new_method->get_descriptor();
 
     int size = new_method->parse_argument_list().size() + 1;		// don't forget `this`!!!
@@ -499,7 +497,8 @@ void BytecodeEngine::invokeVirtual(Method *new_method, stack<Oop *> & op_stack, 
         size --;
     }
     // modify: close the `Perf` class (LOL)
-    if (new_method->get_klass()->get_name() == L"sun/misc/Perf" || new_method->get_klass()->get_name() == L"sun/misc/PerfCounter") {
+    wstring _name = new_method->get_klass()->get_name();
+    if (_name == L"sun/misc/Perf" || _name == L"sun/misc/PerfCounter") {
         if (new_method->is_void()) {
             return;
         } else if (new_method->is_return_primitive()){
@@ -515,10 +514,11 @@ void BytecodeEngine::invokeVirtual(Method *new_method, stack<Oop *> & op_stack, 
         thread.get_stack_trace();			// delete, for debug
         std::wcout << new_method->get_klass()->get_name() << " " << signature << std::endl;
     }
-    if(ref==nullptr){
+    if(ref==nullptr&&new_method->get_name()==L"hasClassPathAttribute"){
         int i =0;
     }
     assert(ref != nullptr);			// `this` must not be nullptr!!!!
+
 #ifdef BYTECODE_DEBUG
     sync_wcout{} << "(DEBUG)";
 	if (new_method->is_private()) {
@@ -3206,43 +3206,6 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
                 int rtpool_index = ((pc[1] << 8) | pc[2]);
                 assert(rt_pool[rtpool_index-1].first == CONSTANT_Methodref);
                 auto new_method = (Method *)(rt_pool[rtpool_index-1].second);
-                if(new_method->get_name()==L"setIn0"){
-                    std::cout<<"setIn0"<<std::endl;
-                }
-
-                if(new_method->get_name()==L"requireNonNull"){
-                    std::cout<<"requireNonNull"<<std::endl;
-                }
-
-                if(new_method->get_name()==L"setIn0"){
-                    std::cout<<"setIn0"<<std::endl;
-                }
-                if(new_method->get_name()==L"setIn0"){
-                    std::cout<<"setIn0"<<std::endl;
-                }
-                if(new_method->get_name()==L"setOut0"){
-                    std::cout<<"setOut0"<<std::endl;
-                }
-
-                if(new_method->get_name()==L"newPrintStream"){
-                    std::cout<<"newPrintStream"<<std::endl;
-                }
-
-                if(new_method->get_name()==L"setErr0"){
-                    std::cout<<"setErr0"<<std::endl;
-                }
-                if(new_method->get_name()==L"forOutputStreamWriter"){
-                    std::cout<<"forOutputStreamWriter"<<std::endl;
-                }
-                if(new_method->get_name()==L"defaultCharset"){
-                    std::cout<<"defaultCharset"<<std::endl;
-                }
-
-                if(new_method->get_name()==L"nextHashCode"){
-                    std::cout<<"nextHashCode"<<std::endl;
-                }
-
-                //初始化  Outputstream 的 两个参数(string,z)V 的时候失败
                 invokeStatic(new_method, op_stack, thread, cur_frame, pc);
 
                 // **IMPORTANT** judge whether returns an Exception!!!

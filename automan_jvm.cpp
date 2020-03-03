@@ -301,6 +301,7 @@ void vm_thread::init_and_do_main()
     InstanceOop *main_klass = (InstanceOop *)java_lang_string::intern(automan_jvm::main_class_name());
 
     this->vm_stack.push_back(StackFrame(load_main_method, nullptr, nullptr, {new IntOop(true), new IntOop(1), main_klass}, this));
+    //todo: 到这里应该是java层面的类加载器开始生效！！！
     MirrorOop *main_class_mirror = (MirrorOop *)this->execute();
     assert(main_class_mirror->get_ooptype() == OopType::_InstanceOop);
 
