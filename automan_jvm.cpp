@@ -213,7 +213,7 @@ void vm_thread::init_and_do_main()
         //todo: 注意这里的 threadid 的来源，可能要修改
         init_thread->set_field_value(THREAD L":eetop:J", new LongOop((uint64_t)GetCurrentThreadId()));
         //todo: 这里的线程优先级还没有绑定到 thread句柄上， 通过 setThreadPriority
-        init_thread->set_field_value(THREAD L":priority:I", new IntOop(THREAD_PRIORITY_NORMAL));
+        init_thread->set_field_value(THREAD L":priority:I", new IntOop(5));
         //todo: 这里通过 openthread 根据当前线程的id 获取到线程句柄  注意，当前线程的句柄不能关闭
         ThreadTable::add_a_thread(GetCurrentThreadId(), init_thread, this);
 
