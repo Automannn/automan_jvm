@@ -169,7 +169,7 @@ void JVM_InitProperties(list<Oop *> & _stack){		// static
     assert(hashtable_put != nullptr);
 
     // get pwd/sun_src
-    wstring sun_src = pwd + L"\\sun_src";
+    wstring sun_src = pwd + L"\\sun_src\\";
     wstring rtjar_folder = utf8_to_wstring("C:\\Program Files\\Java\\jdk1.8.0_161\\jre\\lib\\");
     //todo: vm的 properties
     // add properties: 	// this, key, value
@@ -185,7 +185,7 @@ void JVM_InitProperties(list<Oop *> & _stack){		// static
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"gopherProxySet"), java_lang_string::intern(L"false")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.vm.vendor"), java_lang_string::intern(L"wind2412")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.vendor.url"), java_lang_string::intern(L"http://wind2412.github.io/")});
-    thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"path.separator"), java_lang_string::intern(L":")});
+    thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"path.separator"), java_lang_string::intern(L";")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"file.encoding.pkg"), java_lang_string::intern(L"sun.io")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"user.country"), java_lang_string::intern(L"CN")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"user.language"), java_lang_string::intern(L"zh")});
@@ -202,7 +202,7 @@ void JVM_InitProperties(list<Oop *> & _stack){		// static
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"sun.management.compiler"), java_lang_string::intern(L"nop")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"sun.io.unicode.encoding"), java_lang_string::intern(L"UnicodeBig")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.home"), java_lang_string::intern(rtjar_folder)});
-    thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.class.path"), java_lang_string::intern(pwd + L":" + sun_src)});		 // TODO: need modified.
+    thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.class.path"), java_lang_string::intern(pwd + L";" + sun_src+L";"+rtjar_folder)});		 // TODO: need modified.
     //todo: 新增属性
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"user.dir"), java_lang_string::intern(pwd)});
     _stack.push_back(prop);

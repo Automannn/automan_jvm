@@ -37,6 +37,7 @@ void JVM_WIN_Canonicalize0(list<Oop*>& _stack){
     }
     //todo: 由于没有使用boost，因此 暂时不做规范化，直接返回
     wstring canonical_path = path;
+    std::wcout<<L"canonical_path is "<<path<<std::endl;
 
     if (has_final_char) {
         canonical_path += final_char;
