@@ -298,6 +298,7 @@ void vm_thread::init_and_do_main()
     BytecodeEngine::initial_client(launcher_helper_klass, *this);
     Method *load_main_method = launcher_helper_klass->get_this_class_method(L"checkAndLoadMain:(ZILjava/lang/String;)Ljava/lang/Class;");
     // new a String.
+    wstring ss = automan_jvm::main_class_name();
     InstanceOop *main_klass = (InstanceOop *)java_lang_string::intern(automan_jvm::main_class_name());
 
     this->vm_stack.push_back(StackFrame(load_main_method, nullptr, nullptr, {new IntOop(true), new IntOop(1), main_klass}, this));

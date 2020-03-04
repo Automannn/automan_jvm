@@ -3177,6 +3177,11 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
                 }
                 auto new_method = (Method *)(rt_pool[rtpool_index-1].second);
 
+                if(new_method->get_name()==L"findClass"){
+                    int i=0;
+                }
+
+
                 invokeVirtual(new_method, op_stack, thread, cur_frame, pc);
 
                 // **IMPORTANT** judge whether returns an Exception!!!
@@ -3206,6 +3211,10 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
                 int rtpool_index = ((pc[1] << 8) | pc[2]);
                 assert(rt_pool[rtpool_index-1].first == CONSTANT_Methodref);
                 auto new_method = (Method *)(rt_pool[rtpool_index-1].second);
+
+                if(new_method->get_name()==L"getNextLoader"){
+                    int i=0;
+                }
                 invokeStatic(new_method, op_stack, thread, cur_frame, pc);
 
                 // **IMPORTANT** judge whether returns an Exception!!!
