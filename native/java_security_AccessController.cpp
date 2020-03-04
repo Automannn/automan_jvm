@@ -53,13 +53,13 @@ void JVM_DoPrivileged (list<Oop*>& _stack)
      */
     Method *method = ((InstanceKlass *)pa->get_klass())->get_this_class_method(L"run:()" VOD);
     if (method == nullptr) {
-		method = ((InstanceKlass *)pa->get_klass())->get_this_class_method(L"run:()" STR);
-		if (method == nullptr) {
-			method = ((InstanceKlass *)pa->get_klass())->get_this_class_method(L"run:()" FLD);
-			if (method == nullptr) {
-				method = ((InstanceKlass *)pa->get_klass())->get_this_class_method(L"run:()Lsun/reflect/ReflectionFactory;");
-			}
-		}
+//		method = ((InstanceKlass *)pa->get_klass())->get_this_class_method(L"run:()" STR);
+//		if (method == nullptr) {
+//			method = ((InstanceKlass *)pa->get_klass())->get_this_class_method(L"run:()" FLD);
+//			if (method == nullptr) {
+//				method = ((InstanceKlass *)pa->get_klass())->get_this_class_method(L"run:()Lsun/reflect/ReflectionFactory;");
+//			}
+//		}
         method = ((InstanceKlass *)pa->get_klass())->get_this_class_method(L"run:()" OBJ);
     }
     assert(method != nullptr);

@@ -194,7 +194,7 @@ void JVM_InitProperties(list<Oop *> & _stack){		// static
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"os.arch"), java_lang_string::intern(L"x86_64")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"sun.arch.data.model"), java_lang_string::intern(L"64")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"line.separator"), java_lang_string::intern(L"\n")});
-    thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"file.separator"), java_lang_string::intern(L"\\")});
+    thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"file.separator"), java_lang_string::intern(L"/")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"sun.jnu.encoding"), java_lang_string::intern(L"UTF-8")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"file.encoding"), java_lang_string::intern(L"UTF-8")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.specification.name"), java_lang_string::intern(L"Java Platform API Specification")});
@@ -202,7 +202,7 @@ void JVM_InitProperties(list<Oop *> & _stack){		// static
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"sun.management.compiler"), java_lang_string::intern(L"nop")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"sun.io.unicode.encoding"), java_lang_string::intern(L"UnicodeBig")});
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.home"), java_lang_string::intern(rtjar_folder)});
-    thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.class.path"), java_lang_string::intern(pwd + L";" + sun_src+L";"+rtjar_folder)});		 // TODO: need modified.
+    thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"java.class.path"), java_lang_string::intern(pwd + L"\\;" + sun_src+L"\\;"+rtjar_folder+L"\\")});		 // TODO: need modified.
     //todo: 新增属性
     thread.add_frame_and_execute(hashtable_put, {prop, java_lang_string::intern(L"user.dir"), java_lang_string::intern(pwd)});
     _stack.push_back(prop);

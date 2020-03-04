@@ -149,7 +149,7 @@ Oop * vm_thread::add_frame_and_execute(Method *new_method, const std::list<Oop *
     uint8_t *backup_pc = this->pc;
     this->vm_stack.push_back(StackFrame(new_method, this->pc, nullptr, list, this));
 
-    if(new_method->get_name()==L"getAppClassLoader"){
+    if(new_method->get_name()==L"findClass"&&new_method->get_klass()->get_name()==L"java/net/URLClassLoader"){
         int i=0;
     }
     Oop * result = BytecodeEngine::execute(*this, this->vm_stack.back(), this->thread_no);
