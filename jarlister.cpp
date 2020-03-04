@@ -191,9 +191,10 @@ bool JarLister::getjarlist(const wstring & rtjar_pos) const
 wstring pwd;
 
 //todo: 修改 rjd 为windows 的路径
-JarLister::JarLister() : rjd(L"root")
+JarLister::JarLister() : rjd(L"")
 {
     pwd = utf8_to_wstring(getProgramDir());
+    rjd = RtJarDirectory(pwd);
     wstring rtjar_folder;
 #if (defined (__APPLE__))
     rtjar_folder = utf8_to_wstring(pt.get<std::string>("path.mac"));

@@ -114,6 +114,7 @@ public:
         if(cache.find(classname)!=cache.end()){
             return true;
         } else{
+            wstring _path = rjd.get_name();
             bool result = rjd.find_file(StringSplitter(classname));
             if(result){
                 cache.insert(classname);

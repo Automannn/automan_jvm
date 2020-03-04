@@ -608,6 +608,7 @@ void BytecodeEngine::invokeVirtual(Method *new_method, stack<Oop *> & op_stack, 
         sync_wcout{} << "(DEBUG) invoke a method: <class>: " << ref->get_klass()->get_name() << "-->" << new_method->get_name() << ":(this)"<< new_method->get_descriptor() << std::endl;
 #endif
         Oop *result = thread.add_frame_and_execute(target_method, arg_list);
+        //todo: 这里需要将loaders全部打印出来，看看路径情况;
 
         if (cur_frame.has_exception) {
             op_stack.push(result);
@@ -764,7 +765,12 @@ else if (*pc == 0xb8)
 sync_wcout{} << "(DEBUG) invoke a method: <class>: " << new_klass->get_name() << "-->" << new_method->get_name() << ":"<< new_method->get_descriptor() << std::endl;
 #endif
         Oop *result = thread.add_frame_and_execute(new_method, arg_list);
-
+        if(new_method->get_name()==L"getProperty"&&cur_frame.method->get_name()==L"getAppClassLoader"){
+            //todo: 这里将string的内容打印出来
+                InstanceOop* _insan = (InstanceOop*)result;
+                wstring paths = java_lang_string::stringOop_to_wstring(_insan);
+                int i=0;
+        }
         if (cur_frame.has_exception) {
             op_stack.push(result);
         } else if (!new_method->is_void()) {
@@ -3211,10 +3217,6 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
                 int rtpool_index = ((pc[1] << 8) | pc[2]);
                 assert(rt_pool[rtpool_index-1].first == CONSTANT_Methodref);
                 auto new_method = (Method *)(rt_pool[rtpool_index-1].second);
-
-                if(new_method->get_name()==L"getNextLoader"){
-                    int i=0;
-                }
                 invokeStatic(new_method, op_stack, thread, cur_frame, pc);
 
                 // **IMPORTANT** judge whether returns an Exception!!!

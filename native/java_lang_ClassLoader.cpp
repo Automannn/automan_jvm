@@ -27,6 +27,9 @@ void JVM_FindLoadedClass(list<Oop *> & _stack){
 
     wstring klass_name = java_lang_string::stringOop_to_wstring(str);
     klass_name = std::regex_replace(klass_name, std::wregex(L"\\."), L"/") + L".class";
+    if(klass_name == L"Test.class"){
+        int i=0;
+    }
     LockGuard lg(system_classmap_lock);
     auto iter = system_classmap.find(klass_name);
     if (iter == system_classmap.end()) {

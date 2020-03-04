@@ -45,6 +45,11 @@ Klass *BootStrapClassLoader::loadClass(const wstring & classname, ByteStream *, 
     LockGuard lg(system_classmap_lock);
     assert(jl.find_file(L"java/lang/Object.class")==1);
     wstring target = classname + L".class";
+
+    if(classname==L"Test.class"){
+        int i=0;
+    }
+
     if (jl.find_file(target)) {
         if (system_classmap.find(target) != system_classmap.end()) {	// has been loaded
             return system_classmap[target];
@@ -177,6 +182,9 @@ Klass *AutomanClassLoader::loadClass(const wstring & classname, ByteStream *byte
 #ifdef DEBUG
     sync_wcout{} << "(DEBUG) loading ... [" << classname << "]" << std::endl;		// delete
 #endif
+    if(classname ==L"Test"||classname==L"Test.class"){
+        int i=0;
+    }
     if (is_anonymous) {
         assert(byte_buf != nullptr);
         std::istream *stream;
