@@ -149,12 +149,24 @@ Oop * vm_thread::add_frame_and_execute(Method *new_method, const std::list<Oop *
     uint8_t *backup_pc = this->pc;
     this->vm_stack.push_back(StackFrame(new_method, this->pc, nullptr, list, this));
 
+    //todo: 明天接着调试，可以在getResource的基础上，增加 Init file 的调试，看看情况
     if(new_method->get_name()==L"findClass"&&new_method->get_klass()->get_name()==L"java/net/URLClassLoader"){
         int i=0;
+    }
+    if(new_method->get_name()==L"close"&&new_method->get_descriptor()==L"()V"&&new_method->get_klass()->get_name()==L"java/io/FileInputStream"){
+        //todo: 明天调试起点，最新栈！
+        int i=0;//需要将第二个栈值打印，为路径
     }
     Oop * result = BytecodeEngine::execute(*this, this->vm_stack.back(), this->thread_no);
     this->vm_stack.pop_back();
     this->pc = backup_pc;
+    //todo:这里是解析 父类path的
+    if(new_method->get_name()==L"resolve"&&new_method->get_descriptor()==L"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"){
+        wstring parentPath = java_lang_string::stringOop_to_wstring((InstanceOop*)result);
+        std::wcout<<"parenPath is"<<parentPath<<std::endl;
+        int i=0;
+    }
+
     assert(frame_num == this->vm_stack.size());
     return result;
 }

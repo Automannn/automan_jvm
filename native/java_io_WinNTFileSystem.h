@@ -12,6 +12,7 @@ using std::list;
 
 void JVM_InitIDs(list<Oop*>& _stack);
 void JVM_WIN_Canonicalize0(list<Oop*>& _stack);
+//void JVM_WIN_getLength(list<Oop*>& _stack);
 void *java_io_WinNTFileSystem_search_method(const wstring& signature);
 
 

@@ -15,6 +15,8 @@
 static unordered_map<wstring, void*> methods = {
         {L"initIDs:()V",				(void *)&JVM_InitIDs},
         {L"canonicalize0:(" STR ")" STR,				(void *)&JVM_WIN_Canonicalize0},
+//        {L"getLength:(" STR ")" STR,				(void *)&JVM_WIN_getLength},
+
 };
 
 void JVM_InitIDs(list<Oop*>& _stack){
@@ -50,6 +52,10 @@ void JVM_WIN_Canonicalize0(list<Oop*>& _stack){
 #endif
 }
 
+//void JVM_WIN_getLength(list<Oop*>& _stack){
+//    InstanceOop *_this = (InstanceOop *)_stack.front();	_stack.pop_front();
+//    InstanceOop *file = (InstanceOop *)_stack.front();	_stack.pop_front();
+//}
 
 
 void *java_io_WinNTFileSystem_search_method(const wstring& signature){

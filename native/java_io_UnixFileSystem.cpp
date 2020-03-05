@@ -12,6 +12,7 @@
 #include "../utils/utils.h"
 #include <sys/stat.h>
 
+//todo: linux能正常运行？？？
 static unordered_map<wstring, void*> methods = {
         {L"initIDs:()V",								(void *)&JVM_UFS_InitIDs},
         {L"canonicalize0:(" STR ")" STR,				(void *)&JVM_Canonicalize0},

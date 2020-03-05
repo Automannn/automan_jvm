@@ -13,6 +13,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <iostream>
+#include <istream>
 #include <errno.h>
 #include "../classloader.h"
 
@@ -31,6 +33,7 @@ void JVM_Open0(list<Oop *> & _stack){
     InstanceOop *_this = (InstanceOop *)_stack.front();	_stack.pop_front();
     InstanceOop *str = (InstanceOop *)_stack.front();	_stack.pop_front();
     std::string backup_str = wstring_to_utf8(java_lang_string::stringOop_to_wstring(str));
+    std::cout<<"access file: "<<backup_str<<std::endl;
     const char *filename = backup_str.c_str();
 #ifdef DEBUG
     sync_wcout{} << "open filename: [" << filename << "]." << std::endl;
@@ -38,7 +41,9 @@ void JVM_Open0(list<Oop *> & _stack){
     // use O_RDONLY to open the file!!! (of FileInputStream, 1. readOnly, 2. only read File, not dir!)
     int fd;
     do {
-        fd = open(filename, O_RDONLY, 0666);
+        fd = open(filename, std::ios::binary, 1);
+        //这里先将之前的文件打开方式给替换掉
+//        fd = open(filename, O_RDONLY, 0666);
     } while (fd == -1 && errno == EINTR);		// prevent from being interrupted from SIGINT.
     if (fd == -1)	assert(false);
     int ret;
@@ -88,9 +93,18 @@ void JVM_ReadBytes(list<Oop *> & _stack){
     assert(bytes->get_length() > offset && bytes->get_length() >= (offset + len));		// ArrayIndexOutofBoundException
     char *buf = new char[len];
     int ret;
+    DWORD _ptr;
     if ((ret = read(fd, buf, len)) == -1) {
         assert(false);
     }
+    //返回为0，表面操作不成功
+    if(_ret==0 ){
+        ret =-1;
+    } else{
+        ret = _ptr;
+    }
+    std::cout<<"the loaded file is ==========="<<std::endl;
+    std::cout<<*buf<<std::endl;
     if (ret == 0) {		// EOF
         _stack.push_back(new IntOop(-1));
 #ifdef DEBUG
