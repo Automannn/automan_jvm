@@ -41,7 +41,7 @@ void JVM_Open0(list<Oop *> & _stack){
     // use O_RDONLY to open the file!!! (of FileInputStream, 1. readOnly, 2. only read File, not dir!)
     int fd;
     do {
-        fd = open(filename, std::ios::binary, 1);
+        fd = open(filename, O_RDONLY|O_BINARY, 1);
         //这里先将之前的文件打开方式给替换掉
 //        fd = open(filename, O_RDONLY, 0666);
     } while (fd == -1 && errno == EINTR);		// prevent from being interrupted from SIGINT.
@@ -98,6 +98,7 @@ void JVM_ReadBytes(list<Oop *> & _stack){
     if ((ret = read(fd, buf, len)) == -1) {
         assert(false);
     }
+    //todo: 同时要处理，多次读取的指针偏移  即 append的作用
     //处理文件中存在 0x1A的情况,注意，当前的len并不一定是文件的长度，而是该次读取的长度，其肯定是小于等于文件长度的
     while (ret<len){
         buf[ret-1]='\032';//填充 0x1A
