@@ -92,28 +92,16 @@ void JVM_ReadBytes(list<Oop *> & _stack){
     int fd = ((IntOop *)oop)->value;
     assert(bytes->get_length() > offset && bytes->get_length() >= (offset + len));		// ArrayIndexOutofBoundException
     char *buf = new char[len];
-    //TODO:这里有一个大大大大大大！！！！ 坑
-    //windows中，读取的0x1A 会触发 EOF，经检测，256个字节中，只有0x1A会造成此异常，因此，采用fseek重定位指针处理
+   //todo: windows这里，多次读取需要加入偏移
+   int _offlen= lseek(fd,offset,SEEK_SET);
+   if(_offlen!=offset){
+       assert(false);
+   }
     int ret;
     if ((ret = read(fd, buf, len)) == -1) {
         assert(false);
     }
-    //todo: 同时要处理，多次读取的指针偏移  即 append的作用
-    //处理文件中存在 0x1A的情况,注意，当前的len并不一定是文件的长度，而是该次读取的长度，其肯定是小于等于文件长度的
-    while (ret<len){
-        buf[ret-1]='\032';//填充 0x1A
-        lseek(fd,1,SEEK_CUR);ret++;//向后偏移一个位置后，修正读取数量
-        int _subLen= len-ret; //剩余的字节长度
-        char* _subBuf = new char[_subLen];
-        int beforeLen = ret;
-        int afterLen =read(fd,_subBuf,_subLen);
-        if(afterLen==0) continue; //如果之后读取到的依然为0x1A,则跳过当次循环，进入下一次处理
-        for(int i=beforeLen-1,j=0;i<beforeLen+afterLen;i++,j++){//将新读取的内容进行拷贝
-            buf[i]=_subBuf[j];
-        }
-        ret = beforeLen+afterLen; //拷贝完成后，修正已读数量
-    }
-
+    //todo: 要处理windows，多次读取的指针偏移  即 append的作用
     if (ret == 0) {		// EOF
         _stack.push_back(new IntOop(-1));
 #ifdef DEBUG

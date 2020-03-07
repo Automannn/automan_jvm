@@ -514,9 +514,6 @@ void BytecodeEngine::invokeVirtual(Method *new_method, stack<Oop *> & op_stack, 
         thread.get_stack_trace();			// delete, for debug
         std::wcout << new_method->get_klass()->get_name() << " " << signature << std::endl;
     }
-    if(ref==nullptr&&new_method->get_name()==L"hasClassPathAttribute"){
-        int i =0;
-    }
     assert(ref != nullptr);			// `this` must not be nullptr!!!!
 
 #ifdef BYTECODE_DEBUG
@@ -567,10 +564,6 @@ void BytecodeEngine::invokeVirtual(Method *new_method, stack<Oop *> & op_stack, 
         } else {
             InstanceKlass *new_klass = new_method->get_klass();
             void *native_method = find_native(new_klass->get_name(), signature);
-            if(target_method->get_name()==L"getLength"&&target_method->get_descriptor()==L"(Ljava/io/File;)J"){
-                //todo: 接下来调试的地方
-                int i=0;
-            }
             // no need to add a stack frame!
             if (native_method == nullptr) {
                 std::wcout << "You didn't write the [" << new_klass->get_name() << ":" << signature << "] native ";
@@ -1006,28 +999,13 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
     uint32_t code_length = code_method->get_code()->code_length;
     stack<Oop *> & op_stack = cur_frame.op_stack;
     vector<Oop *> & localVariableTable = cur_frame.localVariableTable;
-    if(code_method->get_name()==L"getResource"){
-        InstanceOop* _oop = (InstanceOop*)localVariableTable[1];
-        std::wstring path = java_lang_string::stringOop_to_wstring(_oop);
-        std::wcout<<"path is "<<path<<std::endl;
-    }
-
     if(code_method->get_name()==L"defineClass"&&code_method->get_descriptor()==L"(Ljava/lang/String;Lsun/misc/Resource;)Ljava/lang/Class;"){
-        //todo: 明天调试的起点
+        //todo: 后面调试，用于观察 类加载机制
         int iii=0;
     }
-
-    if(code_method->get_name()==L"<init>"&&code_method->get_descriptor()==L"(Ljava/io/File;Ljava/lang/String;)V"&&code_method->get_klass()->get_name()==L"java/io/File"){
-        int i=0;//需要将第二个栈值为路径，第三个栈值为文件名
-//        InstanceOop* _oop = (InstanceOop*)localVariableTable[1];
-        InstanceOop* _oop1 = (InstanceOop*)localVariableTable[2];
-//        std::wstring path = java_lang_string::stringOop_to_wstring(_oop);
-        std::wstring path1 = java_lang_string::stringOop_to_wstring(_oop1);
-//        std::wcout<<"file.base path is "<<path<<std::endl;
-        std::wcout<<"file is "<<path1<<std::endl;
+    if(code_method->get_name()==L"standardStream"&&code_method->get_klass()->get_name()==L"(I)Ljava/io/FileDescriptor;"){
+        int i=0;
     }
-
-
     uint8_t *code_begin = code_method->get_code()->code;
     InstanceKlass *code_klass = code_method->get_klass();
     rt_constant_pool & rt_pool = *code_klass->get_rtpool();
@@ -3205,20 +3183,14 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
                     assert(rt_pool[rtpool_index-1].first == CONSTANT_InterfaceMethodref);
                 }
                 auto new_method = (Method *)(rt_pool[rtpool_index-1].second);
-                if(new_method->get_name()==L"getByteBuffer"&&new_method->get_descriptor()==L"()Ljava/nio/ByteBuffer;"&&new_method->get_klass()->get_name()==
-                                                                                                                               L"sun/misc/Resource"){
-                    int i=0;
-                }
-
-                if(new_method->get_name()==L"getContentLength"&&new_method->get_klass()->get_name()==L"sun/misc/Resource"){
-                    int i=0;
-                }
 
                 if(new_method->get_name()==L"findClass"){
                     int i=0;
                 }
-
-
+                if(new_method->get_name()==L"write"&&new_method->get_descriptor()==L"([BII)V"&&new_method->get_klass()->get_name()==L"java/io/OutputStream"){
+                    //todo: 接着立马要调试的地方
+                    int i=0;
+                }
                 invokeVirtual(new_method, op_stack, thread, cur_frame, pc);
 
                 // **IMPORTANT** judge whether returns an Exception!!!
@@ -3248,10 +3220,6 @@ Oop * BytecodeEngine::execute(vm_thread & thread, StackFrame & cur_frame, int th
                 int rtpool_index = ((pc[1] << 8) | pc[2]);
                 assert(rt_pool[rtpool_index-1].first == CONSTANT_Methodref);
                 auto new_method = (Method *)(rt_pool[rtpool_index-1].second);
-                if(new_method->get_name()==L"<init>"&&new_method->get_descriptor()==L"(Ljava/io/File;Ljava/lang/String;)V"&&new_method->get_klass()->get_name()==L"java/io/File"){
-                    int i=0;
-                }
-
                 invokeStatic(new_method, op_stack, thread, cur_frame, pc);
 
                 // **IMPORTANT** judge whether returns an Exception!!!
